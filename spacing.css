@@ -1,0 +1,9 @@
+/* AviCore — minimal base */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font: var(--type-body);
+  color: var(--text-body);
+  background: var(--surface-page);
+  -webkit-font-smoothing: antialiased;
+}

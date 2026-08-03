@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/avicore-design-system-de3db94f-5f0d-4139-9da8-2c39449e89d5/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/avicore-design-system-de3db94f-5f0d-4139-9da8-2c39449e89d5/tokens/colors.css">
+<link rel="stylesheet" href="_ds/avicore-design-system-de3db94f-5f0d-4139-9da8-2c39449e89d5/tokens/typography.css">
+<link rel="stylesheet" href="_ds/avicore-design-system-de3db94f-5f0d-4139-9da8-2c39449e89d5/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/avicore-design-system-de3db94f-5f0d-4139-9da8-2c39449e89d5/tokens/base.css">
+<link rel="stylesheet" href="_ds/avicore-design-system-de3db94f-5f0d-4139-9da8-2c39449e89d5/styles.css">
+<script src="_ds/avicore-design-system-de3db94f-5f0d-4139-9da8-2c39449e89d5/_ds_bundle.js"></script>
+<style>
+  body { margin: 0; background: var(--surface-page); }
+  a { color: var(--text-link); text-decoration: none; }
+  a:hover { color: var(--navy-800); text-decoration: underline; }
+</style>
+</helmet>
+
+<div style="min-height:100vh; background:var(--surface-page); font-family:var(--font-sans); color:var(--text-body);">
+
+  <header style="{{ headerStyle }}">
+    <div style="display:flex; align-items:center; gap:14px;">
+      <span style="height:36px; width:36px; background:#fff; border-radius:6px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <img src="uploads/images.jpg" alt="Thai Inter Flying" style="height:32px; width:32px; object-fit:contain; display:block;">
+      </span>
+      <span style="font:600 13.5px/1.25 var(--font-sans); color:#fff; letter-spacing:0.01em;">Thai Inter Flying</span>
+      <span style="{{ brandDividerStyle }}"></span>
+      <span style="{{ brandSubStyle }}">Flight Slot Booking — Student Flight Day Reservation</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:14px;">
+      <span style="font:400 12.5px/1 var(--font-sans); color:#C6CCE4;">{{ sessionLabel }}</span>
+      <div style="display:flex; gap:6px; background:rgba(255,255,255,.08); padding:3px; border-radius:6px;">
+        <button onClick="{{ goStudent }}" style="{{ tabStudentStyle }}">Student</button>
+        <button onClick="{{ goAdmin }}" style="{{ tabAdminStyle }}">Admin</button>
+      </div>
+      <sc-if value="{{ signedIn }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ openSettings }}" style="font:500 12.5px/1 var(--font-sans); padding:7px 12px; border-radius:5px; border:1px solid rgba(255,255,255,.28); background:rgba(255,255,255,.1); color:#fff; cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; gap:6px;">⚙️ Settings</button>
+        <button onClick="{{ signOut }}" style="font:500 12.5px/1 var(--font-sans); padding:7px 12px; border-radius:5px; border:1px solid rgba(255,255,255,.28); background:transparent; color:#fff; cursor:pointer; white-space:nowrap;">Sign out</button>
+      </sc-if>
+    </div>
+  </header>
+
+  <main style="{{ mainStyle }}">
+
+    <sc-if value="{{ hasDbError }}" hint-placeholder-val="{{ false }}">
+      <div style="background:var(--status-danger-bg); color:var(--status-danger-fg); border-radius:6px; padding:11px 14px; font:400 12.5px/1.5 var(--font-sans);">{{ dbError }}</div>
+    </sc-if>
+
+    <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:920px; margin:24px auto 0; background:var(--surface-card); border:1px solid var(--border-default); border-radius:16px; box-shadow:0 20px 40px rgba(10, 17, 40, 0.12); overflow:hidden; display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));">
+        <!-- Hero Banner Panel -->
+        <div style="background:linear-gradient(135deg, #0A1128 0%, #1C2541 60%, #101C3D 100%); padding:36px 32px; display:flex; flex-direction:column; justify-content:space-between; color:#fff; position:relative; overflow:hidden;">
+          <div style="position:absolute; top:-40px; right:-40px; width:180px; height:180px; background:radial-gradient(circle, rgba(74, 144, 226, 0.18) 0%, transparent 70%); border-radius:50%; pointer-events:none;"></div>
+          <div style="display:flex; flex-direction:column; gap:20px; z-index:1;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span style="height:44px; width:44px; background:#fff; border-radius:10px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex-shrink:0;">
+                <img src="uploads/images.jpg" alt="Thai Inter Flying" style="height:36px; width:36px; object-fit:contain; display:block;">
+              </span>
+              <div>
+                <span style="font:700 15px/1.2 var(--font-sans); color:#fff; letter-spacing:0.02em; display:block;">Thai Inter Flying</span>
+                <span style="font:400 12px/1.3 var(--font-sans); color:#A0AEC0;">Flight Training Academy</span>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
+              <span style="display:inline-flex; align-items:center; gap:6px; background:rgba(74,144,226,0.15); border:1px solid rgba(74,144,226,0.3); color:#63B3ED; padding:4px 10px; border-radius:20px; font:500 11.5px/1 var(--font-sans); width:fit-content;">
+                ✈️ BE76 Multi-Engine Program
+              </span>
+              <h2 style="margin:0; font:700 24px/1.3 var(--font-sans); color:#fff;">Student Flight Slot Booking System</h2>
+              <p style="margin:0; font:400 13px/1.6 var(--font-sans); color:#CBD5E0;">Reserve flight dates, manage multi-day trips, and view real-time training aircraft slot availability.</p>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px; margin-top:32px; border-top:1px solid rgba(255,255,255,0.1); padding-top:18px; z-index:1;">
+            <div style="display:flex; align-items:center; gap:8px; font:400 12px/1.4 var(--font-sans); color:#E2E8F0;">
+              <span style="width:6px; height:6px; border-radius:50%; background:#48BB78; display:inline-block;"></span>
+              <span>1 Flight per Student / Day · Max 5 Slots / Day</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; font:400 12px/1.4 var(--font-sans); color:#E2E8F0;">
+              <span style="width:6px; height:6px; border-radius:50%; background:#4299E1; display:inline-block;"></span>
+              <span>Automatic Travel-In & Travel-Out Day Grouping</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Panel -->
+        <div style="padding:36px 32px; display:flex; flex-direction:column; justify-content:center; gap:20px; background:var(--surface-card);">
+          <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border-default); padding-bottom:14px;">
+            <div>
+              <h1 style="margin:0; font:700 20px/1.3 var(--font-sans); color:var(--text-heading);">Student Sign In</h1>
+              <span style="font:400 12.5px/1.5 var(--font-sans); color:var(--text-muted);">Enter registered email and password</span>
+            </div>
+            <button onClick="{{ goAdmin }}" style="font:500 11.5px/1 var(--font-sans); padding:6px 10px; border-radius:6px; border:1px solid var(--border-default); background:var(--slate-050); color:var(--navy-700); cursor:pointer; white-space:nowrap; transition:all 0.2s;">Staff Portal ›</button>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Email Address" placeholder="name@example.com" type="email" value="{{ authEmail }}" on-change="{{ setAuthEmail }}" hint-size="100%,66px"></x-import>
+            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Password" placeholder="Enter your password" type="password" value="{{ authPw }}" on-change="{{ setAuthPw }}" hint-size="100%,66px"></x-import>
+          </div>
+
+          <sc-if value="{{ hasAuthError }}" hint-placeholder-val="{{ false }}">
+            <div style="background:var(--status-danger-bg); color:var(--status-danger-fg); border-radius:8px; padding:12px 14px; font:400 12.5px/1.5 var(--font-sans); display:flex; align-items:center; gap:8px;">
+              <span>⚠️</span>
+              <span>{{ authError }}</span>
+            </div>
+          </sc-if>
+
+          <div style="display:flex; flex-direction:column; gap:12px; border-top:1px solid var(--border-default); padding-top:18px;">
+            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" on-click="{{ doLogin }}" style="width:100%" hint-size="100%,42px">Sign in to Account</x-import>
+            <div style="display:flex; align-items:center; justify-content:center; gap:6px; font:400 12.5px/1.5 var(--font-sans); color:var(--text-muted); margin-top:4px;">
+              <span>Don't have an account?</span>
+              <button onClick="{{ goSignup }}" style="border:none; background:none; color:var(--text-link); font-weight:600; cursor:pointer; padding:0;">Create an account</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isSignup }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:920px; margin:24px auto 0; background:var(--surface-card); border:1px solid var(--border-default); border-radius:16px; box-shadow:0 20px 40px rgba(10, 17, 40, 0.12); overflow:hidden; display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));">
+        <!-- Hero Banner Panel -->
+        <div style="background:linear-gradient(135deg, #0A1128 0%, #1C2541 60%, #101C3D 100%); padding:36px 32px; display:flex; flex-direction:column; justify-content:space-between; color:#fff; position:relative; overflow:hidden;">
+          <div style="position:absolute; top:-40px; right:-40px; width:180px; height:180px; background:radial-gradient(circle, rgba(74, 144, 226, 0.18) 0%, transparent 70%); border-radius:50%; pointer-events:none;"></div>
+          <div style="display:flex; flex-direction:column; gap:20px; z-index:1;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span style="height:44px; width:44px; background:#fff; border-radius:10px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex-shrink:0;">
+                <img src="uploads/images.jpg" alt="Thai Inter Flying" style="height:36px; width:36px; object-fit:contain; display:block;">
+              </span>
+              <div>
+                <span style="font:700 15px/1.2 var(--font-sans); color:#fff; letter-spacing:0.02em; display:block;">Thai Inter Flying</span>
+                <span style="font:400 12px/1.3 var(--font-sans); color:#A0AEC0;">Flight Training Academy</span>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
+              <span style="display:inline-flex; align-items:center; gap:6px; background:rgba(74,144,226,0.15); border:1px solid rgba(74,144,226,0.3); color:#63B3ED; padding:4px 10px; border-radius:20px; font:500 11.5px/1 var(--font-sans); width:fit-content;">
+                📝 Student Account Registration
+              </span>
+              <h2 style="margin:0; font:700 24px/1.3 var(--font-sans); color:#fff;">Register Once for Flight Booking</h2>
+              <p style="margin:0; font:400 13px/1.6 var(--font-sans); color:#CBD5E0;">Create your student pilot profile once. Your training batch and contact details will automatically autofill future flight reservations.</p>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px; margin-top:32px; border-top:1px solid rgba(255,255,255,0.1); padding-top:18px; z-index:1;">
+            <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:12px 14px; font:400 12.5px/1.5 var(--font-sans); color:#E2E8F0;">
+              {{ signupNotice }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Panel -->
+        <div style="padding:32px; display:flex; flex-direction:column; justify-content:center; gap:18px; background:var(--surface-card);">
+          <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border-default); padding-bottom:12px;">
+            <div>
+              <h1 style="margin:0; font:700 20px/1.3 var(--font-sans); color:var(--text-heading);">Create Account</h1>
+              <span style="font:400 12.5px/1.5 var(--font-sans); color:var(--text-muted);">Fill in student pilot details</span>
+            </div>
+            <button onClick="{{ goLogin }}" style="font:500 11.5px/1 var(--font-sans); border:none; background:none; color:var(--text-link); cursor:pointer;">Sign in ›</button>
+          </div>
+
+          <div style="{{ formGridStyle }}">
+            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="First name" placeholder="First name" value="{{ first }}" on-change="{{ setFirst }}" hint-size="100%,66px"></x-import>
+            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Last name" placeholder="Last name" value="{{ last }}" on-change="{{ setLast }}" hint-size="100%,66px"></x-import>
+            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Batch" placeholder="e.g. TIF-27" value="{{ batch }}" on-change="{{ setBatch }}" hint-size="100%,66px"></x-import>
+            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Contact number" placeholder="08X-XXX-XXXX" type="tel" value="{{ phone }}" on-change="{{ setPhone }}" hint-size="100%,66px"></x-import>
+            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Email Address" placeholder="name@example.com" type="email" helper="Registered email address" value="{{ email }}" on-change="{{ setEmail }}" hint-size="100%,66px"></x-import>
+            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Password" placeholder="Min 8 characters" type="password" value="{{ suPw }}" on-change="{{ setSuPw }}" hint-size="100%,66px"></x-import>
+            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Confirm password" placeholder="Re-enter password" type="password" value="{{ suPw2 }}" on-change="{{ setSuPw2 }}" hint-size="100%,66px"></x-import>
+          </div>
+
+          <sc-if value="{{ hasAuthError }}" hint-placeholder-val="{{ false }}">
+            <div style="background:var(--status-danger-bg); color:var(--status-danger-fg); border-radius:8px; padding:10px 12px; font:400 12.5px/1.5 var(--font-sans); display:flex; align-items:center; gap:8px;">
+              <span>⚠️</span>
+              <span>{{ authError }}</span>
+            </div>
+          </sc-if>
+
+          <div style="display:flex; align-items:center; gap:12px; border-top:1px solid var(--border-default); padding-top:16px;">
+            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" on-click="{{ doSignup }}" disabled="{{ signupInvalid }}" hint-size="auto,40px">Create account</x-import>
+            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" variant="ghost" on-click="{{ goLogin }}" hint-size="auto,40px">Back to sign in</x-import>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isAdminLogin }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:920px; margin:24px auto 0; background:var(--surface-card); border:1px solid var(--border-default); border-radius:16px; box-shadow:0 20px 40px rgba(10, 17, 40, 0.12); overflow:hidden; display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));">
+        <!-- Hero Banner Panel -->
+        <div style="background:linear-gradient(135deg, #0F172A 0%, #1E293B 60%, #0F172A 100%); padding:36px 32px; display:flex; flex-direction:column; justify-content:space-between; color:#fff; position:relative; overflow:hidden;">
+          <div style="position:absolute; top:-40px; right:-40px; width:180px; height:180px; background:radial-gradient(circle, rgba(234, 179, 8, 0.15) 0%, transparent 70%); border-radius:50%; pointer-events:none;"></div>
+          <div style="display:flex; flex-direction:column; gap:20px; z-index:1;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span style="height:44px; width:44px; background:#fff; border-radius:10px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex-shrink:0;">
+                <img src="uploads/images.jpg" alt="Thai Inter Flying" style="height:36px; width:36px; object-fit:contain; display:block;">
+              </span>
+              <div>
+                <span style="font:700 15px/1.2 var(--font-sans); color:#fff; letter-spacing:0.02em; display:block;">Thai Inter Flying</span>
+                <span style="font:400 12px/1.3 var(--font-sans); color:#94A3B8;">Flight Training Office</span>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
+              <span style="display:inline-flex; align-items:center; gap:6px; background:rgba(234,179,8,0.15); border:1px solid rgba(234,179,8,0.3); color:#FACC15; padding:4px 10px; border-radius:20px; font:500 11.5px/1 var(--font-sans); width:fit-content;">
+                🛡️ Staff & Operations Portal
+              </span>
+              <h2 style="margin:0; font:700 24px/1.3 var(--font-sans); color:#fff;">Training Staff Access</h2>
+              <p style="margin:0; font:400 13px/1.6 var(--font-sans); color:#94A3B8;">Manage daily flight rosters, set maintenance no-fly days, toggle slot limits, and view flight reservations.</p>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px; margin-top:32px; border-top:1px solid rgba(255,255,255,0.1); padding-top:18px; z-index:1;">
+            <div style="display:flex; align-items:center; gap:8px; font:400 12px/1.4 var(--font-sans); color:#CBD5E1;">
+              <span style="width:6px; height:6px; border-radius:50%; background:#F59E0B; display:inline-block;"></span>
+              <span>Restricted to authorized Thai Inter Flying staff</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Panel -->
+        <div style="padding:36px 32px; display:flex; flex-direction:column; justify-content:center; gap:20px; background:var(--surface-card);">
+          <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border-default); padding-bottom:14px;">
+            <div>
+              <h1 style="margin:0; font:700 20px/1.3 var(--font-sans); color:var(--text-heading);">Staff Sign In</h1>
+              <span style="font:400 12.5px/1.5 var(--font-sans); color:var(--text-muted);">Enter training office staff passcode</span>
+            </div>
+            <button onClick="{{ goStudent }}" style="font:500 11.5px/1 var(--font-sans); padding:6px 10px; border-radius:6px; border:1px solid var(--border-default); background:var(--slate-050); color:var(--navy-700); cursor:pointer; white-space:nowrap;">Student Portal ›</button>
+          </div>
+
+          <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Staff Passcode" placeholder="Enter staff passcode" type="password" helper="{{ passcodeHint }}" value="{{ adminPw }}" on-change="{{ setAdminPw }}" hint-size="100%,66px"></x-import>
+
+          <sc-if value="{{ hasAuthError }}" hint-placeholder-val="{{ false }}">
+            <div style="background:var(--status-danger-bg); color:var(--status-danger-fg); border-radius:8px; padding:12px 14px; font:400 12.5px/1.5 var(--font-sans); display:flex; align-items:center; gap:8px;">
+              <span>⚠️</span>
+              <span>{{ authError }}</span>
+            </div>
+          </sc-if>
+
+          <div style="display:flex; flex-direction:column; gap:10px; border-top:1px solid var(--border-default); padding-top:16px;">
+            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" on-click="{{ doAdminLogin }}" style="width:100%" hint-size="100%,40px">Authenticate as Staff</x-import>
+            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" variant="ghost" on-click="{{ goStudent }}" style="width:100%" hint-size="100%,40px">Back to student booking</x-import>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isStudent }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex; flex-direction:column; gap:20px;">
+
+        <div style="{{ pageHeadStyle }}">
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <h1 style="margin:0; font:600 22px/1.3 var(--font-sans); color:var(--text-heading);">Book Flight Days</h1>
+            <span style="font:400 13px/1.5 var(--font-sans); color:var(--text-muted);">One flight per student per day. Five slots per day. Flight times are assigned by staff.</span>
+          </div>
+          <div style="{{ stepRowStyle }}">
+            <span style="{{ step1Chip }}">1 Student details</span>
+            <span style="color:var(--slate-300);">›</span>
+            <span style="{{ step2Chip }}">2 Select days</span>
+            <span style="color:var(--slate-300);">›</span>
+            <span style="{{ step3Chip }}">3 Confirm</span>
+          </div>
+        </div>
+
+        <sc-if value="{{ isStep1 }}" hint-placeholder-val="{{ true }}">
+          <div style="background:var(--surface-card); border:1px solid var(--border-default); border-radius:10px; box-shadow:var(--shadow-card); padding:24px; max-width:620px; display:flex; flex-direction:column; gap:18px;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div style="display:flex; flex-direction:column; gap:3px;">
+                <h2 style="margin:0; font:600 16px/1.4 var(--font-sans); color:var(--text-heading);">Student Details</h2>
+                <span style="font:400 12.5px/1.5 var(--font-sans); color:var(--text-muted);">Enter details exactly as registered in the training record.</span>
+              </div>
+              <button onClick="{{ openSettings }}" style="font:500 12px/1 var(--font-sans); padding:6px 12px; border-radius:6px; border:1px solid var(--border-default); background:var(--slate-050); color:var(--navy-700); cursor:pointer; display:inline-flex; align-items:center; gap:6px;">⚙️ Settings</button>
+            </div>
+            <div style="{{ formGridStyle }}">
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="First name" placeholder="First name" value="{{ first }}" on-change="{{ setFirst }}" hint-size="100%,66px"></x-import>
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Last name" placeholder="Last name" value="{{ last }}" on-change="{{ setLast }}" hint-size="100%,66px"></x-import>
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Batch" placeholder="e.g. TIF-27" helper="Training batch currently enrolled" value="{{ batch }}" on-change="{{ setBatch }}" hint-size="100%,66px"></x-import>
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Email" placeholder="name@example.com" type="email" helper="Confirmation is sent to this address" value="{{ email }}" on-change="{{ setEmail }}" hint-size="100%,66px"></x-import>
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Contact number" placeholder="08X-XXX-XXXX" type="tel" helper="Reachable during the flight window" value="{{ phone }}" on-change="{{ setPhone }}" hint-size="100%,66px"></x-import>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px; border-top:1px solid var(--border-default); padding-top:16px;">
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" on-click="{{ toStep2 }}" disabled="{{ step1Invalid }}" hint-size="auto,40px">Next</x-import>
+              <span style="font:400 12.5px/1.5 var(--font-sans); color:var(--text-faint);">{{ step1Hint }}</span>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isBookingLocked }}" hint-placeholder-val="{{ false }}">
+          <div style="background:var(--surface-card); border:1px solid var(--border-default); border-radius:10px; box-shadow:var(--shadow-card); padding:24px; max-width:620px; display:flex; flex-direction:column; gap:16px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="font:500 11.5px/1 var(--font-sans); background:var(--status-warning-bg); color:var(--status-warning-fg); border-radius:4px; padding:5px 8px;">Booking session closed</span>
+              <span style="font:500 12.5px/1 var(--font-mono); color:var(--text-muted);">{{ lockCountdown }}</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <h2 style="margin:0; font:600 16px/1.4 var(--font-sans); color:var(--text-heading);">Day selection opens {{ lockOpenDate }}</h2>
+              <span style="font:400 13px/1.6 var(--font-sans); color:var(--text-muted); max-width:46ch; text-wrap:pretty;">Your account is registered and your details are saved. Flight day selection is released on {{ lockOpenDate }} at 09:00. Sign in again on that date to choose your days.</span>
+            </div>
+            <div style="border-top:1px solid var(--border-default); padding-top:16px; display:flex; gap:10px;">
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" variant="ghost" on-click="{{ toStep1 }}" hint-size="auto,40px">Back to details</x-import>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isStep2 }}" hint-placeholder-val="{{ true }}">
+          <div style="{{ twoColStyle }}">
+
+            <div style="background:var(--surface-card); border:1px solid var(--border-default); border-radius:10px; box-shadow:var(--shadow-card); padding:20px; display:flex; flex-direction:column; gap:14px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <button onClick="{{ prevMonth }}" style="{{ navPrevStyle }}">‹</button>
+                  <span style="font:600 15px/1 var(--font-sans); color:var(--text-heading); min-width:150px; text-align:center;">{{ monthLabel }}</span>
+                  <button onClick="{{ nextMonth }}" style="{{ navNextStyle }}">›</button>
+                </div>
+                <span style="font:400 12.5px/1 var(--font-sans); color:var(--text-muted);">Click each day you want to fly · click again to remove</span>
+              </div>
+
+              <div style="{{ calGridStyle }}">
+                <span style="font:500 11.5px/1 var(--font-sans); color:var(--text-faint); text-align:center; padding-bottom:2px;">Sun</span>
+                <span style="font:500 11.5px/1 var(--font-sans); color:var(--text-faint); text-align:center;">Mon</span>
+                <span style="font:500 11.5px/1 var(--font-sans); color:var(--text-faint); text-align:center;">Tue</span>
+                <span style="font:500 11.5px/1 var(--font-sans); color:var(--text-faint); text-align:center;">Wed</span>
+                <span style="font:500 11.5px/1 var(--font-sans); color:var(--text-faint); text-align:center;">Thu</span>
+                <span style="font:500 11.5px/1 var(--font-sans); color:var(--text-faint); text-align:center;">Fri</span>
+                <span style="font:500 11.5px/1 var(--font-sans); color:var(--text-faint); text-align:center;">Sat</span>
+                <sc-for list="{{ days }}" as="d" hint-placeholder-count="35">
+                  <div onClick="{{ d.onClick }}" style="{{ d.style }}">
+                    <span style="font:500 14px/1 var(--font-mono);">{{ d.num }}</span>
+                    <span style="{{ d.statusStyle }}">{{ d.status }}</span>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="display:flex; flex-wrap:wrap; gap:14px; border-top:1px solid var(--border-default); padding-top:12px;">
+                <span style="display:inline-flex; align-items:center; gap:6px; font:400 12px/1 var(--font-sans); color:var(--text-muted);"><span style="width:10px; height:10px; border-radius:3px; background:var(--white); border:1px solid var(--slate-300);"></span>Slots open</span>
+                <span style="display:inline-flex; align-items:center; gap:6px; font:400 12px/1 var(--font-sans); color:var(--text-muted);"><span style="width:10px; height:10px; border-radius:3px; background:var(--navy-700);"></span>Selected</span>
+                <span style="display:inline-flex; align-items:center; gap:6px; font:400 12px/1 var(--font-sans); color:var(--text-muted);"><span style="width:10px; height:10px; border-radius:3px; background:var(--status-danger-bg);"></span>Slots full</span>
+                <span style="display:inline-flex; align-items:center; gap:6px; font:400 12px/1 var(--font-sans); color:var(--text-muted);"><span style="width:10px; height:10px; border-radius:3px; background:var(--slate-100); border:1px solid var(--slate-200);"></span>No flying (maintenance)</span>
+              </div>
+            </div>
+
+            <div style="background:var(--surface-card); border:1px solid var(--border-default); border-radius:10px; box-shadow:var(--shadow-card); padding:20px; display:flex; flex-direction:column; gap:14px;">
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.06em; text-transform:uppercase; color:var(--text-faint);">Student</span>
+                <span style="font:600 15px/1.4 var(--font-sans); color:var(--text-heading);">{{ fullName }}</span>
+                <span style="font:500 12.5px/1 var(--font-mono); color:var(--text-muted);">{{ batchLabel }}</span>
+              </div>
+              <div style="border-top:1px solid var(--border-default); padding-top:14px; display:flex; flex-direction:column; gap:10px;">
+                <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.06em; text-transform:uppercase; color:var(--text-faint);">Selected flying days</span>
+                <span style="font:500 14px/1.5 var(--font-sans); color:var(--text-heading);">{{ selectionLabel }}</span>
+                <span style="font:400 12.5px/1.6 var(--font-sans); color:var(--text-muted);">{{ selectionNote }}</span>
+              </div>
+              <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}">
+                <div style="background:var(--status-danger-bg); color:var(--status-danger-fg); border-radius:6px; padding:10px 12px; font:400 12.5px/1.5 var(--font-sans);">{{ error }}</div>
+              </sc-if>
+              <div style="display:flex; flex-direction:column; gap:8px; border-top:1px solid var(--border-default); padding-top:14px;">
+                <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" on-click="{{ toStep3 }}" disabled="{{ step2Invalid }}" style="width:100%" hint-size="100%,40px">Review booking</x-import>
+                <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" variant="ghost" on-click="{{ clearSel }}" style="width:100%" hint-size="100%,40px">Clear selection</x-import>
+                <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" variant="ghost" on-click="{{ toStep1 }}" style="width:100%" hint-size="100%,40px">Back</x-import>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showSummary }}" hint-placeholder-val="{{ false }}">
+          <div style="{{ twoColStyle }}">
+            <div style="background:var(--surface-card); border:1px solid var(--border-default); border-radius:10px; box-shadow:var(--shadow-card); overflow:hidden;">
+              <div style="padding:18px 20px; border-bottom:1px solid var(--border-default); display:flex; align-items:center; justify-content:space-between;">
+                <div style="display:flex; flex-direction:column; gap:3px;">
+                  <h2 style="margin:0; font:600 16px/1.4 var(--font-sans); color:var(--text-heading);">Itinerary Summary</h2>
+                  <span style="font:400 12.5px/1.5 var(--font-sans); color:var(--text-muted);">Flight times are assigned by staff. Days only — no time selection.</span>
+                </div>
+                <span style="{{ summaryBadgeStyle }}">{{ summaryBadge }}</span>
+              </div>
+              <div style="padding:18px 20px; display:flex; flex-direction:column; gap:18px;">
+                <sc-for list="{{ summaryMonths }}" as="m" hint-placeholder-count="1">
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <span style="font:600 13px/1 var(--font-sans); color:var(--text-heading);">{{ m.label }}</span>
+                    <div style="{{ miniCalGridStyle }}">
+                      <span style="font:500 11px/1 var(--font-sans); color:var(--text-faint); text-align:center; padding-bottom:2px;">Sun</span>
+                      <span style="font:500 11px/1 var(--font-sans); color:var(--text-faint); text-align:center;">Mon</span>
+                      <span style="font:500 11px/1 var(--font-sans); color:var(--text-faint); text-align:center;">Tue</span>
+                      <span style="font:500 11px/1 var(--font-sans); color:var(--text-faint); text-align:center;">Wed</span>
+                      <span style="font:500 11px/1 var(--font-sans); color:var(--text-faint); text-align:center;">Thu</span>
+                      <span style="font:500 11px/1 var(--font-sans); color:var(--text-faint); text-align:center;">Fri</span>
+                      <span style="font:500 11px/1 var(--font-sans); color:var(--text-faint); text-align:center;">Sat</span>
+                      <sc-for list="{{ m.cells }}" as="c" hint-placeholder-count="35">
+                        <div style="{{ c.style }}">
+                          <span style="font:500 12.5px/1 var(--font-mono);">{{ c.num }}</span>
+                          <span style="{{ c.tagStyle }}">{{ c.tag }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-for>
+                <div style="display:flex; flex-wrap:wrap; gap:14px;">
+                  <span style="display:inline-flex; align-items:center; gap:6px; font:400 12px/1 var(--font-sans); color:var(--text-muted);"><span style="width:10px; height:10px; border-radius:3px; background:var(--navy-700);"></span>Flight day</span>
+                  <span style="display:inline-flex; align-items:center; gap:6px; font:400 12px/1 var(--font-sans); color:var(--text-muted);"><span style="width:10px; height:10px; border-radius:3px; background:var(--navy-050); border:1px solid var(--navy-300);"></span>Travel day</span>
+                  <span style="display:inline-flex; align-items:center; gap:6px; font:400 12px/1 var(--font-sans); color:var(--text-muted);"><span style="width:10px; height:10px; border-radius:3px; background:var(--slate-100); border:1px solid var(--slate-200);"></span>On site, no flight</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:10px; border-top:1px solid var(--border-default); padding-top:14px;">
+                  <sc-for list="{{ tripRows }}" as="t" hint-placeholder-count="2">
+                    <div style="display:flex; align-items:baseline; gap:12px;">
+                      <span style="font:500 12px/1.4 var(--font-sans); letter-spacing:.04em; text-transform:uppercase; color:var(--text-faint); width:60px; flex-shrink:0;">{{ t.label }}</span>
+                      <span style="font:400 12.5px/1.6 var(--font-sans); color:var(--text-body);">{{ t.detail }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="border-top:1px solid var(--border-default); background:var(--status-warning-bg); padding:14px 20px; display:flex; flex-direction:column; gap:4px;">
+                <span style="font:500 12px/1.4 var(--font-sans); letter-spacing:.02em; text-transform:uppercase; color:var(--status-warning-fg);">Not a guarantee of flight</span>
+                <span style="font:400 12.5px/1.6 var(--font-sans); color:var(--status-warning-fg);">A confirmed day booking does not guarantee that the flight will take place. Flights may be cancelled or rescheduled due to unscheduled maintenance, weather, or other operational factors.</span>
+              </div>
+            </div>
+
+            <div style="background:var(--surface-card); border:1px solid var(--border-default); border-radius:10px; box-shadow:var(--shadow-card); padding:20px; display:flex; flex-direction:column; gap:14px;">
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.06em; text-transform:uppercase; color:var(--text-faint);">Booked by</span>
+                <span style="font:600 15px/1.4 var(--font-sans); color:var(--text-heading);">{{ fullName }}</span>
+                <span style="font:500 12.5px/1 var(--font-mono); color:var(--text-muted);">{{ batchLabel }}</span>
+                <span style="font:400 12px/1.5 var(--font-sans); color:var(--text-muted); word-break:break-word;">{{ contactLabel }}</span>
+              </div>
+              <div style="border-top:1px solid var(--border-default); padding-top:14px; display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; justify-content:space-between; font:400 13px/1.4 var(--font-sans);"><span style="color:var(--text-muted);">Flights</span><span style="font:500 13px/1.4 var(--font-mono); color:var(--text-heading);">{{ flightCountLabel }}</span></div>
+                <div style="display:flex; justify-content:space-between; font:400 13px/1.4 var(--font-sans);"><span style="color:var(--text-muted);">First travel in</span><span style="font:500 13px/1.4 var(--font-mono); color:var(--text-heading);">{{ travelInLabel }}</span></div>
+                <div style="display:flex; justify-content:space-between; font:400 13px/1.4 var(--font-sans);"><span style="color:var(--text-muted);">Last travel out</span><span style="font:500 13px/1.4 var(--font-mono); color:var(--text-heading);">{{ travelOutLabel }}</span></div>
+                <div style="display:flex; justify-content:space-between; font:400 13px/1.4 var(--font-sans);"><span style="color:var(--text-muted);">Booking ID</span><span style="font:500 13px/1.4 var(--font-mono); color:var(--text-heading);">{{ bookingCode }}</span></div>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:8px; border-top:1px solid var(--border-default); padding-top:14px;">
+                <sc-if value="{{ isStep3 }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" on-click="{{ confirm }}" style="width:100%" hint-size="100%,40px">Confirm booking</x-import>
+                    <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" variant="ghost" on-click="{{ toStep2 }}" style="width:100%" hint-size="100%,40px">Edit flight days</x-import>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ isDone }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <div style="background:var(--status-success-bg); color:var(--status-success-fg); border-radius:6px; padding:10px 12px; font:400 12.5px/1.5 var(--font-sans);">Booking recorded. Awaiting flight time assignment by staff.</div>
+                    <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" on-click="{{ addDays }}" style="width:100%" hint-size="100%,40px">Add more trip</x-import>
+                    <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" variant="secondary" on-click="{{ askCancel }}" style="width:100%" hint-size="100%,40px">New booking (replaces this one)</x-import>
+                    <span style="font:400 11.5px/1.5 var(--font-sans); color:var(--text-faint);">Added trips are merged into this booking and the travel dates are recalculated. A new booking deletes every day above and must be requested at least 7 days before the first flight day.</span>
+                  </div>
+                </sc-if>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; flex-direction:column; gap:20px;">
+        <div style="{{ pageHeadStyle }}">
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <h1 style="margin:0; font:600 22px/1.3 var(--font-sans); color:var(--text-heading);">Slot Administration</h1>
+            <span style="font:400 13px/1.5 var(--font-sans); color:var(--text-muted);">{{ adminHint }}</span>
+          </div>
+          <div style="display:flex; gap:6px; background:var(--slate-100); padding:3px; border-radius:6px;">
+            <button onClick="{{ goRoster }}" style="{{ rosterTabStyle }}">Booking roster</button>
+            <button onClick="{{ goEdit }}" style="{{ editTabStyle }}">Edit slot status</button>
+          </div>
+        </div>
+
+        <div style="{{ statGridStyle }}">
+          <div style="background:var(--surface-card); border:1px solid var(--border-default); border-radius:10px; box-shadow:var(--shadow-card); padding:16px; display:flex; flex-direction:column; gap:6px;">
+            <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.06em; text-transform:uppercase; color:var(--text-faint);">Total bookings</span>
+            <span style="font:600 24px/1 var(--font-mono); color:var(--text-heading);">{{ statBookings }}</span>
+          </div>
+          <div style="background:var(--surface-card); border:1px solid var(--border-default); border-radius:10px; box-shadow:var(--shadow-card); padding:16px; display:flex; flex-direction:column; gap:6px;">
+            <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.06em; text-transform:uppercase; color:var(--text-faint);">Flights this month</span>
+            <span style="font:600 24px/1 var(--font-mono); color:var(--text-heading);">{{ statFlights }}</span>
+          </div>
+          <div style="background:var(--surface-card); border:1px solid var(--border-default); border-radius:10px; box-shadow:var(--shadow-card); padding:16px; display:flex; flex-direction:column; gap:6px;">
+            <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.06em; text-transform:uppercase; color:var(--text-faint);">Days full</span>
+            <span style="font:600 24px/1 var(--font-mono); color:var(--text-heading);">{{ statFull }}</span>
+          </div>
+          <div style="background:var(--surface-card); border:1px solid var(--border-default); border-radius:10px; box-shadow:var(--shadow-card); padding:16px; display:flex; flex-direction:column; gap:6px;">
+            <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.06em; text-transform:uppercase; color:var(--text-faint);">No-fly days</span>
+            <span style="font:600 24px/1 var(--font-mono); color:var(--text-heading);">{{ statNoFly }}</span>
+          </div>
+        </div>
+
+        <div style="background:var(--surface-card); border:1px solid var(--border-default); border-radius:10px; box-shadow:var(--shadow-card); padding:20px; display:flex; flex-direction:column; gap:14px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <button onClick="{{ prevMonth }}" style="{{ navPrevStyle }}">‹</button>
+              <span style="font:600 15px/1 var(--font-sans); color:var(--text-heading); min-width:150px; text-align:center;">{{ monthLabel }}</span>
+              <button onClick="{{ nextMonth }}" style="{{ navNextStyle }}">›</button>
+            </div>
+            <span style="font:400 12.5px/1 var(--font-sans); color:var(--text-muted);">{{ adminCalHint }}</span>
+          </div>
+          <div style="{{ calGridStyle }}">
+            <span style="font:500 11.5px/1 var(--font-sans); color:var(--text-faint); text-align:center; padding-bottom:2px;">Sun</span>
+            <span style="font:500 11.5px/1 var(--font-sans); color:var(--text-faint); text-align:center;">Mon</span>
+            <span style="font:500 11.5px/1 var(--font-sans); color:var(--text-faint); text-align:center;">Tue</span>
+            <span style="font:500 11.5px/1 var(--font-sans); color:var(--text-faint); text-align:center;">Wed</span>
+            <span style="font:500 11.5px/1 var(--font-sans); color:var(--text-faint); text-align:center;">Thu</span>
+            <span style="font:500 11.5px/1 var(--font-sans); color:var(--text-faint); text-align:center;">Fri</span>
+            <span style="font:500 11.5px/1 var(--font-sans); color:var(--text-faint); text-align:center;">Sat</span>
+            <sc-for list="{{ days }}" as="d" hint-placeholder-count="35">
+              <div onClick="{{ d.onClick }}" style="{{ d.adminStyle }}">
+                <div style="display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                  <span style="font:500 14px/1 var(--font-mono);">{{ d.num }}</span>
+                  <span style="{{ d.loadStyle }}">{{ d.load }}</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:3px; width:100%; margin-top:6px;">
+                  <sc-for list="{{ d.people }}" as="p" hint-placeholder-count="2">
+                    <span style="{{ p.style }}">{{ p.label }}</span>
+                  </sc-for>
+                </div>
+                <span style="{{ d.flagStyle }}">{{ d.flag }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:14px; border-top:1px solid var(--border-default); padding-top:12px;">
+            <span style="display:inline-flex; align-items:center; gap:6px; font:400 12px/1 var(--font-sans); color:var(--text-muted);"><span style="width:10px; height:10px; border-radius:3px; background:var(--navy-050); border:1px solid var(--navy-200);"></span>Booked student</span>
+            <span style="display:inline-flex; align-items:center; gap:6px; font:400 12px/1 var(--font-sans); color:var(--text-muted);"><span style="width:10px; height:10px; border-radius:3px; background:var(--status-danger-bg);"></span>Slots full</span>
+            <span style="display:inline-flex; align-items:center; gap:6px; font:400 12px/1 var(--font-sans); color:var(--text-muted);"><span style="width:10px; height:10px; border-radius:3px; background:var(--slate-100); border:1px solid var(--slate-200);"></span>No flying (maintenance)</span>
+          </div>
+        </div>
+
+        <div style="{{ adminTwoColStyle }}">
+          <div style="background:var(--surface-card); border:1px solid var(--border-default); border-radius:10px; box-shadow:var(--shadow-card); overflow:hidden;">
+            <div style="padding:16px 20px; border-bottom:1px solid var(--border-default); display:flex; align-items:center; justify-content:space-between;">
+              <h2 style="margin:0; font:600 15px/1.4 var(--font-sans); color:var(--text-heading);">Bookings</h2>
+              <span style="font:400 12.5px/1 var(--font-sans); color:var(--text-muted); white-space:nowrap;">Awaiting time assignment</span>
+            </div>
+            <div style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
+              <div style="min-width:520px;">
+            <div style="display:flex; gap:14px; padding:10px 20px; background:var(--slate-050); border-bottom:1px solid var(--border-default);">
+              <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.04em; text-transform:uppercase; color:var(--text-faint); width:100px; flex-shrink:0;">ID</span>
+              <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.04em; text-transform:uppercase; color:var(--text-faint); flex:1; min-width:104px;">Student</span>
+              <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.04em; text-transform:uppercase; color:var(--text-faint); width:58px; flex-shrink:0;">Batch</span>
+              <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.04em; text-transform:uppercase; color:var(--text-faint); width:118px; flex-shrink:0;">Flight days</span>
+              <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.04em; text-transform:uppercase; color:var(--text-faint); width:40px; flex-shrink:0; text-align:right;">Flts</span>
+            </div>
+            <sc-for list="{{ bookingRows }}" as="b" hint-placeholder-count="6">
+              <div style="display:flex; gap:14px; align-items:center; padding:11px 20px; border-bottom:1px solid var(--slate-100);">
+                <span style="font:500 12px/1.3 var(--font-mono); color:var(--text-body); width:100px; flex-shrink:0;">{{ b.id }}</span>
+                <span style="display:flex; flex-direction:column; gap:2px; flex:1; min-width:104px; overflow:hidden;">
+                  <span style="font:400 13px/1.3 var(--font-sans); color:var(--text-heading);">{{ b.name }}</span>
+                  <span style="font:400 11.5px/1.3 var(--font-sans); color:var(--text-faint); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ b.email }}</span>
+                </span>
+                <span style="font:500 12px/1.3 var(--font-mono); color:var(--text-muted); width:58px; flex-shrink:0;">{{ b.batch }}</span>
+                <span style="font:400 12px/1.3 var(--font-sans); color:var(--text-body); width:118px; flex-shrink:0;">{{ b.range }}</span>
+                <span style="font:500 12px/1.3 var(--font-mono); color:var(--text-body); width:40px; flex-shrink:0; text-align:right;">{{ b.count }}</span>
+              </div>
+            </sc-for>
+              </div>
+            </div>
+            <sc-if value="{{ noBookings }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:22px 20px; font:400 12.5px/1.5 var(--font-sans); color:var(--text-faint);">No bookings yet.</div>
+            </sc-if>
+          </div>
+
+          <div style="background:var(--surface-card); border:1px solid var(--border-default); border-radius:10px; box-shadow:var(--shadow-card); padding:20px; display:flex; flex-direction:column; gap:14px;">
+            <div style="display:flex; flex-direction:column; gap:5px;">
+              <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.06em; text-transform:uppercase; color:var(--text-faint);">Day detail</span>
+              <span style="font:600 15px/1.4 var(--font-sans); color:var(--text-heading);">{{ dayDetailTitle }}</span>
+              <span style="font:400 12.5px/1.5 var(--font-sans); color:var(--text-muted);">{{ dayDetailMeta }}</span>
+            </div>
+            <div style="border-top:1px solid var(--border-default); padding-top:12px; display:flex; flex-direction:column; gap:8px;">
+              <sc-for list="{{ dayDetailRows }}" as="r" hint-placeholder-count="3">
+                <div style="display:flex; flex-direction:column; gap:2px;">
+                  <span style="font:400 13px/1.4 var(--font-sans); color:var(--text-heading);">{{ r.name }}</span>
+                  <span style="font:400 11.5px/1.4 var(--font-mono); color:var(--text-muted);">{{ r.batch }}</span>
+                  <span style="font:400 11.5px/1.4 var(--font-sans); color:var(--text-faint);">{{ r.contact }}</span>
+                </div>
+              </sc-for>
+              <span style="font:400 12.5px/1.5 var(--font-sans); color:var(--text-faint);">{{ dayDetailEmpty }}</span>
+            </div>
+            <div style="border-top:1px solid var(--border-default); padding-top:12px; display:flex; flex-direction:column; gap:8px;">
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" variant="secondary" size="sm" on-click="{{ markNoFly }}" disabled="{{ noDaySelected }}" style="width:100%" hint-size="100%,32px">Mark no flying</x-import>
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" variant="secondary" size="sm" on-click="{{ markFull }}" disabled="{{ noDaySelected }}" style="width:100%" hint-size="100%,32px">Mark slots full</x-import>
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" variant="ghost" size="sm" on-click="{{ clearFlag }}" disabled="{{ noDaySelected }}" style="width:100%" hint-size="100%,32px">Clear day status</x-import>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+  </main>
+
+  <sc-if value="{{ showSettingsModal }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; background:rgba(10,17,40,.65); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:24px; z-index:50;">
+      <div style="width:100%; max-width:520px; background:var(--surface-card); border-radius:16px; box-shadow:0 24px 60px rgba(10,17,40,.35); border:1px solid var(--border-default); overflow:hidden; display:flex; flex-direction:column;">
+        <div style="background:linear-gradient(135deg, #0A1128 0%, #1C2541 100%); padding:20px 24px; color:#fff; display:flex; align-items:center; justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span style="width:38px; height:38px; border-radius:10px; background:rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; font-size:18px; color:#fff;">⚙️</span>
+            <div>
+              <h2 style="margin:0; font:600 16px/1.3 var(--font-sans); color:#fff;">Student Profile & Settings</h2>
+              <span style="font:400 12px/1.3 var(--font-sans); color:#A0AEC0;">ตั้งค่าข้อมูลส่วนตัวและการจอง</span>
+            </div>
+          </div>
+          <button onClick="{{ closeSettings }}" style="background:rgba(255,255,255,0.12); border:none; color:#fff; width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center;">✕</button>
+        </div>
+
+        <div style="padding:24px; display:flex; flex-direction:column; gap:20px; max-height:75vh; overflow-y:auto;">
+          <div style="background:var(--slate-050); border:1px solid var(--border-default); border-radius:12px; padding:16px; display:flex; align-items:center; gap:14px;">
+            <div style="width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg, #4A90E2 0%, #101C3D 100%); color:#fff; display:flex; align-items:center; justify-content:center; font:700 18px/1 var(--font-sans); flex-shrink:0; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+              {{ profileInitials }}
+            </div>
+            <div style="display:flex; flex-direction:column; gap:3px; flex:1; overflow:hidden;">
+              <span style="font:600 15px/1.3 var(--font-sans); color:var(--text-heading); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ profileFullName }}</span>
+              <span style="font:400 12.5px/1.3 var(--font-mono); color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ sessionEmail }}</span>
+            </div>
+            <span style="background:rgba(72,187,120,0.15); border:1px solid rgba(72,187,120,0.3); color:#2F855A; padding:4px 10px; border-radius:20px; font:500 11.5px/1 var(--font-sans); white-space:nowrap;">Verified Student</span>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <span style="font:600 13px/1 var(--font-sans); color:var(--text-heading); letter-spacing:.01em;">Personal Details</span>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="First Name" placeholder="First name" value="{{ settingsFirst }}" on-change="{{ setSettingsFirst }}" hint-size="100%,66px"></x-import>
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Last Name" placeholder="Last name" value="{{ settingsLast }}" on-change="{{ setSettingsLast }}" hint-size="100%,66px"></x-import>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Batch" placeholder="e.g. 123" value="{{ settingsBatch }}" on-change="{{ setSettingsBatch }}" hint-size="100%,66px"></x-import>
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Contact Phone" placeholder="08XXXXXXXX" value="{{ settingsPhone }}" on-change="{{ setSettingsPhone }}" hint-size="100%,66px"></x-import>
+            </div>
+          </div>
+
+          <div style="background:rgba(66,153,225,0.08); border:1px solid rgba(66,153,225,0.25); border-radius:10px; padding:14px; display:flex; flex-direction:column; gap:8px;">
+            <span style="font:600 12.5px/1 var(--font-sans); color:var(--navy-800); display:flex; align-items:center; gap:6px;">
+              ✈️ BE76 Multi-Engine Flight Rules
+            </span>
+            <ul style="margin:0; padding-left:18px; font:400 12px/1.6 var(--font-sans); color:var(--text-body);">
+              <li>Max 5 slots available per day for BE76 training.</li>
+              <li>1 flight reservation per student / day.</li>
+              <li>Automatic Travel-In & Travel-Out day grouping.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="padding:16px 24px; background:var(--slate-050); border-top:1px solid var(--border-default); display:flex; align-items:center; justify-content:space-between;">
+          <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" variant="ghost" on-click="{{ closeSettings }}" hint-size="auto,36px">Cancel</x-import>
+          <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" variant="primary" on-click="{{ saveSettings }}" hint-size="auto,36px">Save Changes</x-import>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showCancelDialog }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; background:rgba(12,18,48,.5); display:flex; align-items:center; justify-content:center; padding:24px; z-index:40;">
+      <div style="width:100%; max-width:440px; background:var(--surface-card); border-radius:10px; box-shadow:0 18px 48px rgba(12,18,48,.28); padding:24px; display:flex; flex-direction:column; gap:16px;">
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <h2 style="margin:0; font:600 17px/1.4 var(--font-sans); color:var(--text-heading);">Cancel this booking?</h2>
+          <span style="font:400 13px/1.6 var(--font-sans); color:var(--text-body);">{{ cancelDialogBody }}</span>
+        </div>
+        <div style="{{ cancelNoticeStyle }}">{{ cancelNotice }}</div>
+        <div style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid var(--border-default); padding-top:16px;">
+          <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" variant="ghost" on-click="{{ closeCancel }}" hint-size="auto,40px">Keep booking</x-import>
+          <sc-if value="{{ cancelAllowed }}" hint-placeholder-val="{{ true }}">
+            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" variant="danger" on-click="{{ restart }}" hint-size="auto,40px">Delete and start over</x-import>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;slotsPerDay&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:5,&quot;min&quot;:1,&quot;max&quot;:10,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Booking rules&quot;},&quot;adminPasscode&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;avicore2026&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Booking rules&quot;},&quot;signupOpenDate&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;2026-08-03&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Session window&quot;},&quot;bookingOpenDate&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;2026-08-05&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Session window&quot;}}">
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MON_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTHS = [[2026,7],[2026,8],[2026,9],[2026,10],[2026,11],[2027,0]];
+const FIRST_DAY = '2026-08-01';
+const STORE = 'tif-flight-slot-booking-v4';
+
+function pad(n) { return String(n).padStart(2, '0'); }
+function isoOf(y, m, d) { return y + '-' + pad(m + 1) + '-' + pad(d); }
+function parseIso(s) { const p = s.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); }
+function toIso(dt) { return isoOf(dt.getFullYear(), dt.getMonth(), dt.getDate()); }
+function addDays(s, n) { const d = parseIso(s); d.setDate(d.getDate() + n); return toIso(d); }
+function fmtIso(s) { const d = parseIso(s); return d.getDate() + ' ' + MON[d.getMonth()] + ' ' + d.getFullYear(); }
+function dowIso(s) { return DOW[parseIso(s).getDay()]; }
+function pad4(n) { return String(n).padStart(4, '0'); }
+function daysUntil(is) {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.round((parseIso(is) - today) / 86400000);
+}
+function groupTrips(days) {
+  const sorted = days.slice().sort();
+  const runs = [];
+  sorted.forEach(function (d) {
+    const last = runs[runs.length - 1];
+    if (last && addDays(last[last.length - 1], 1) === d) last.push(d);
+    else runs.push([d]);
+  });
+  const merged = [];
+  runs.forEach(function (g) {
+    const prev = merged[merged.length - 1];
+    if (prev && spanDays(prev[prev.length - 1], g[0]).length === 3) merged[merged.length - 1] = prev.concat(g);
+    else merged.push(g);
+  });
+  return merged.map(function (g) {
+    return { fly: g, arrive: addDays(g[0], -1), depart: addDays(g[g.length - 1], 1) };
+  });
+}
+function compactRange(a, b) {
+  const da = parseIso(a), db = parseIso(b);
+  if (a === b) return fmtIso(a);
+  if (da.getMonth() === db.getMonth() && da.getFullYear() === db.getFullYear()) {
+    return da.getDate() + '–' + db.getDate() + ' ' + MON[db.getMonth()] + ' ' + db.getFullYear();
+  }
+  return da.getDate() + ' ' + MON[da.getMonth()] + ' – ' + fmtIso(b);
+}
+function spanDays(a, b) { const out = []; let c = a; while (c <= b) { out.push(c); c = addDays(c, 1); } return out; }
+
+const SEED = [];
+const SEED_DAY_STATE = {};
+
+class Component extends DCLogic {
+  state = {
+    role: 'student', view: 'login', accounts: {}, session: null,
+    authEmail: '', authPw: '', authErr: '', suPw: '', suPw2: '',
+    adminAuthed: false, adminPw: '', cancelOpen: false, settingsOpen: false,
+    settingsFirst: undefined, settingsLast: undefined, settingsBatch: undefined, settingsPhone: undefined,
+    dbStatus: 'loading', dbError: '',
+    vw: typeof window !== 'undefined' ? window.innerWidth : 1200,
+    step: 1, first: '', last: '', batch: '', email: '', phone: '', confirmedDays: null,
+    mi: 0, sel: [], error: '',
+    adminMode: 'roster', adminDay: null,
+    bookings: SEED, dayState: SEED_DAY_STATE, code: null
+  };
+
+  componentDidMount() {
+    const self = this;
+    import('./db.js').then(function (db) {
+      self.db = db;
+      return self.refresh();
+    }).catch(function (e) {
+      self.setState({ dbStatus: 'error', dbError: String(e.message || e) });
+    });
+    this.poll = setInterval(function () { if (self.db) self.refresh(true); }, 20000);
+    this.onResize = function () { self.setState({ vw: window.innerWidth }); };
+    window.addEventListener('resize', this.onResize);
+    this.onResize();
+  }
+
+  componentWillUnmount() {
+    if (this.poll) clearInterval(this.poll);
+    if (this.onResize) window.removeEventListener('resize', this.onResize);
+  }
+
+  refresh(quiet) {
+    const self = this;
+    if (!quiet) this.setState({ dbStatus: 'loading' });
+    return this.db.loadAll().then(function (d) {
+      self.setState({ accounts: d.accounts, bookings: d.bookings, dayState: d.dayState, dbStatus: 'ok', dbError: '' });
+    }).catch(function (e) {
+      self.setState({ dbStatus: 'error', dbError: String(e.message || e) });
+    });
+  }
+
+  dbFail(e) {
+    this.setState({ dbStatus: 'error', dbError: String((e && e.message) || e) });
+  }
+
+  persistAccounts(accounts, email) {
+    const self = this;
+    if (!this.db || !email) return;
+    this.db.saveAccount(email, accounts[email]).catch(function (e) { self.dbFail(e); });
+  }
+
+  doSignup() {
+    const s = this.state;
+    const email = (s.email || '').trim().toLowerCase();
+    if (this.signupWait > 0) { this.setState({ authErr: 'Registration opens ' + fmtIso(this.signupOpen) + '. Accounts cannot be created yet.' }); return; }
+    if (s.accounts[email]) { this.setState({ authErr: 'An account already exists for this email. Sign in instead.' }); return; }
+    if ((s.suPw || '').length < 8) { this.setState({ authErr: 'Password must be at least 8 characters.' }); return; }
+    if (s.suPw !== s.suPw2) { this.setState({ authErr: 'Passwords do not match.' }); return; }
+    const accounts = Object.assign({}, s.accounts);
+    accounts[email] = { password: s.suPw, first: s.first.trim(), last: s.last.trim(), batch: s.batch.trim(), phone: s.phone.trim() };
+    this.persistAccounts(accounts, email);
+    this.setState({ accounts: accounts, session: email, email: email, view: 'app', step: 2, authErr: '', suPw: '', suPw2: '' });
+  }
+
+  doLogin() {
+    const s = this.state;
+    const email = (s.authEmail || '').trim().toLowerCase();
+    const acc = s.accounts[email];
+    if (!acc || acc.password !== s.authPw) { this.setState({ authErr: 'Email or password is incorrect.' }); return; }
+    const mine = s.bookings.filter(function (b) { return (b.email || '').toLowerCase() === email; });
+    const last = mine.length ? mine[mine.length - 1] : null;
+    this.setState({
+      session: email, view: 'app', authErr: '', authPw: '',
+      first: acc.first, last: acc.last, batch: acc.batch, phone: acc.phone, email: email,
+      step: 2,
+      code: last ? last.id : null,
+      confirmedDays: last ? last.days : null,
+      sel: last ? last.days.slice() : [],
+      mi: last ? Math.max(0, MONTHS.findIndex(function (m) { return isoOf(m[0], m[1], 1).slice(0, 7) === last.days[0].slice(0, 7); })) : 0
+    });
+  }
+
+  signOut() {
+    this.setState({
+      session: null, view: 'login', role: 'student', adminAuthed: false, adminPw: '',
+      step: 1, sel: [], code: null, error: '', authEmail: '', authPw: '', authErr: ''
+    });
+  }
+
+  get slots() { return this.props.slotsPerDay || 5; }
+
+  get signupOpen() { return (this.state && this.state.settings && this.state.settings.signup_open) || this.props.signupOpenDate || '2026-08-03'; }
+  get bookingOpen() { return (this.state && this.state.settings && this.state.settings.booking_open) || this.props.bookingOpenDate || '2026-08-05'; }
+  get narrow() { return (this.state.vw || 1200) < 640; }
+  get stacked() { return (this.state.vw || 1200) < 900; }
+  get signupWait() { return Math.max(0, daysUntil(this.signupOpen)); }
+  get bookingWait() { return Math.max(0, daysUntil(this.bookingOpen)); }
+
+  myBookings() {
+    const email = (this.state.session || '').toLowerCase();
+    return this.state.bookings.filter(function (b) { return (b.email || '').toLowerCase() === email; });
+  }
+
+  myDays() {
+    const out = [];
+    this.myBookings().forEach(function (b) { b.days.forEach(function (d) { if (out.indexOf(d) === -1) out.push(d); }); });
+    return out;
+  }
+
+  startReplace() {
+    const email = (this.state.session || '').toLowerCase();
+    const list = this.state.bookings.filter(function (b) { return (b.email || '').toLowerCase() !== email; });
+    this.setState({
+      bookings: list, bookMode: 'replace', step: 2,
+      sel: [], code: null, confirmedDays: null, error: ''
+    });
+    const self = this;
+    if (this.db) this.db.deleteBookingsForEmail(email).catch(function (e) { self.dbFail(e); });
+  }
+
+  startAdd() {
+    this.setState({ bookMode: 'add', step: 2, sel: [], error: '' });
+  }
+
+  byDay() {
+    const map = {};
+    this.state.bookings.forEach(function (b) {
+      b.days.forEach(function (d) {
+        if (!map[d]) map[d] = [];
+        map[d].push(b);
+      });
+    });
+    return map;
+  }
+
+  dayInfo(is, map) {
+    const st = this.state.dayState[is];
+    const used = (map[is] || []).length;
+    if (is < FIRST_DAY) return { kind: 'past', used: used, left: 0 };
+    if (st === 'noFly') return { kind: 'noFly', used: used, left: 0 };
+    if (st === 'full' || used >= this.slots) return { kind: 'full', used: used, left: 0 };
+    return { kind: 'open', used: used, left: this.slots - used };
+  }
+
+  pick(is, info) {
+    const sel = this.state.sel || [];
+    if (sel.indexOf(is) !== -1) {
+      this.setState({ sel: sel.filter(function (d) { return d !== is; }), error: '' });
+      return;
+    }
+    if (this.myDays().indexOf(is) !== -1) {
+      this.setState({ error: 'You already have a flight booked on that date. Pick a different day.' });
+      return;
+    }
+    if (info.kind !== 'open') {
+      this.setState({ error: info.kind === 'noFly' ? 'No flying on that date — aircraft in maintenance.' : 'Slots are full on that date. Pick another day.' });
+      return;
+    }
+    this.setState({ sel: sel.concat([is]).sort(), error: '' });
+  }
+
+  setFlag(is, flag) {
+    if (!is) return;
+    const next = Object.assign({}, this.state.dayState);
+    if (flag) next[is] = flag; else delete next[is];
+    this.setState({ dayState: next });
+    const self = this;
+    if (this.db) this.db.setDayStatus(is, flag || null).catch(function (e) { self.dbFail(e); });
+  }
+
+  cycleFlag(is) {
+    if (is < FIRST_DAY) return;
+    const cur = this.state.dayState[is];
+    this.setFlag(is, !cur ? 'noFly' : cur === 'noFly' ? 'full' : null);
+  }
+
+  flightDays() {
+    const s = this.state;
+    const map = this.byDay();
+    const self = this;
+    return (s.sel || []).slice().sort().filter(function (d) { return self.dayInfo(d, map).kind === 'open'; });
+  }
+
+  confirm() {
+    const s = this.state;
+    const newDays = this.flightDays();
+    if (!newDays.length) return;
+    const email = (s.email || '').trim();
+    const mine = this.myBookings();
+    const merged = this.myDays().concat(newDays).filter(function (d, i, a) { return a.indexOf(d) === i; }).sort();
+    const self = this;
+    const commit = function (code) {
+      const others = self.state.bookings.filter(function (b) { return (b.email || '').toLowerCase() !== email.toLowerCase(); });
+      const rec = {
+        id: code, name: (self.state.first + ' ' + self.state.last).trim(), batch: self.state.batch,
+        email: email, phone: (self.state.phone || '').trim(), days: merged
+      };
+      self.setState({
+        bookings: others.concat([rec]), step: 4, code: code, confirmedDays: merged, bookMode: null,
+        sel: merged.slice()
+      });
+      if (self.db) {
+        self.db.saveBooking(rec)
+          .then(function () { return self.db.deleteBookingsForEmail(email, code); })
+          .catch(function (e) { self.dbFail(e); });
+      }
+    };
+    if (mine.length) { commit(mine[0].id); return; }
+    if (!this.db) { commit('BK-2026-' + pad4(1)); return; }
+    this.setState({ dbStatus: 'saving' });
+    this.db.nextBookingSeq().then(function (n) {
+      self.setState({ dbStatus: 'ok' });
+      commit('BK-2026-' + pad4(n));
+    }).catch(function (e) { self.dbFail(e); });
+  }
+
+  cellStyle(kind, sel) {
+    const base = {
+      minHeight: this.narrow ? 48 : 62, borderRadius: 6, padding: this.narrow ? '5px 4px' : '7px 8px', display: 'flex',
+      flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-start',
+      border: '1px solid var(--border-default)', background: 'var(--surface-card)',
+      color: 'var(--text-heading)', cursor: 'pointer', textAlign: 'left',
+      transition: 'background 140ms var(--ease-standard)'
+    };
+    if (kind === 'blank') return { minHeight: this.narrow ? 48 : 62, visibility: 'hidden' };
+    if (kind === 'past') return Object.assign(base, { background: 'var(--slate-050)', color: 'var(--text-faint)', cursor: 'default', borderColor: 'var(--slate-100)' });
+    if (kind === 'noFly') return Object.assign(base, { background: 'var(--slate-100)', color: 'var(--text-muted)', borderColor: 'var(--slate-200)' });
+    if (kind === 'full') return Object.assign(base, { background: 'var(--status-danger-bg)', color: 'var(--status-danger-fg)', borderColor: 'var(--status-danger-bg)' });
+    if (sel === 'edge') return Object.assign(base, { background: 'var(--surface-brand)', color: '#fff', borderColor: 'var(--surface-brand)' });
+    if (sel === 'mid') return Object.assign(base, { background: 'var(--navy-050)', borderColor: 'var(--navy-200)', color: 'var(--navy-700)' });
+    return base;
+  }
+
+  adminCellStyle(kind, active) {
+    const base = {
+      minHeight: 118, borderRadius: 6, padding: '7px 8px', display: 'flex',
+      flexDirection: 'column', alignItems: 'flex-start',
+      border: '1px solid var(--border-default)', background: 'var(--surface-card)',
+      color: 'var(--text-heading)', cursor: 'pointer', textAlign: 'left',
+      transition: 'background 140ms var(--ease-standard)'
+    };
+    if (kind === 'blank') return { minHeight: 118, visibility: 'hidden' };
+    if (kind === 'past') Object.assign(base, { background: 'var(--slate-050)', color: 'var(--text-faint)', cursor: 'default', borderColor: 'var(--slate-100)' });
+    else if (kind === 'noFly') Object.assign(base, { background: 'var(--slate-100)', color: 'var(--text-muted)', borderColor: 'var(--slate-200)' });
+    else if (kind === 'full') Object.assign(base, { background: 'var(--status-danger-bg)', borderColor: 'var(--status-danger-bg)', color: 'var(--status-danger-fg)' });
+    if (active) Object.assign(base, { borderColor: 'var(--navy-700)', boxShadow: 'var(--shadow-focus)' });
+    return base;
+  }
+
+  statusStyle(kind) {
+    return { font: '400 11px/1.3 var(--font-sans)', color: kind === 'edge' ? 'rgba(255,255,255,.85)' : 'inherit', opacity: kind === 'edge' ? 1 : 0.85 };
+  }
+
+  chip(active, done) {
+    return {
+      font: '500 12px/1 var(--font-sans)', padding: '6px 10px', borderRadius: 6,
+      background: active ? 'var(--surface-brand)' : done ? 'var(--navy-050)' : 'var(--slate-100)',
+      color: active ? '#fff' : done ? 'var(--navy-700)' : 'var(--text-muted)'
+    };
+  }
+
+  navBtn(disabled) {
+    return {
+      width: 30, height: 30, borderRadius: 6, border: '1px solid var(--border-strong)',
+      background: 'var(--surface-card)', color: 'var(--text-body)',
+      font: '500 15px/1 var(--font-sans)', cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.4 : 1
+    };
+  }
+
+  tabStyle(active) {
+    return {
+      font: '500 12.5px/1 var(--font-sans)', padding: '7px 12px', borderRadius: 5, border: 'none',
+      cursor: 'pointer', background: active ? '#fff' : 'transparent', color: active ? 'var(--navy-800)' : '#C6CCE4'
+    };
+  }
+
+  segStyle(active) {
+    return {
+      font: '500 12.5px/1 var(--font-sans)', padding: '7px 12px', borderRadius: 5, border: 'none',
+      cursor: 'pointer', whiteSpace: 'nowrap', background: active ? 'var(--surface-card)' : 'transparent',
+      color: active ? 'var(--navy-800)' : 'var(--text-muted)',
+      boxShadow: active ? 'var(--shadow-card)' : 'none'
+    };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const self = this;
+    const narrow = this.narrow;
+    const stacked = this.stacked;
+    const map = this.byDay();
+    const adminRole = s.role === 'admin';
+    const isAdmin = adminRole && s.adminAuthed;
+    const studentApp = !adminRole && !!s.session;
+    const mineDays = s.session ? this.myDays() : [];
+    const passcode = this.props.adminPasscode || 'avicore2026';
+    const roster = s.adminMode === 'roster';
+    const m = MONTHS[s.mi];
+    const y = m[0], mo = m[1];
+    const total = new Date(y, mo + 1, 0).getDate();
+    const lead = new Date(y, mo, 1).getDay();
+    const selDays = (s.sel || []).slice().sort();
+    const flights = s.confirmedDays && s.step === 4 ? s.confirmedDays : this.flightDays();
+    const trips = flights.length ? groupTrips(flights) : [];
+
+    const days = [];
+    for (let i = 0; i < lead; i++) days.push({
+      key: 'b' + i, num: '', status: '', load: '', flag: '', people: [],
+      style: this.cellStyle('blank'), adminStyle: this.adminCellStyle('blank'),
+      statusStyle: {}, loadStyle: {}, flagStyle: {}, onClick: null
+    });
+
+    for (let d = 1; d <= total; d++) {
+      const is = isoOf(y, mo, d);
+      const info = this.dayInfo(is, map);
+      let sel = null;
+      if (!isAdmin && selDays.indexOf(is) !== -1) sel = 'edge';
+      const mineDay = studentApp && mineDays.indexOf(is) !== -1;
+      let label;
+      if (mineDay) label = 'Your flight';
+      else if (info.kind === 'past') label = '—';
+      else if (info.kind === 'noFly') label = 'No flying';
+      else if (info.kind === 'full') label = 'Slots full';
+      else if (sel === 'edge') label = info.left + ' slots left';
+      else label = info.left + ' slots left';
+
+      const roll = (map[is] || []);
+      const people = roll.slice(0, 3).map(function (b) {
+        return {
+          label: b.name.split(' ')[0] + ' · ' + b.batch,
+          style: {
+            font: '400 10.5px/1.35 var(--font-sans)', padding: '2px 5px', borderRadius: 4,
+            background: info.kind === 'full' ? 'rgba(255,255,255,.55)' : 'var(--navy-050)',
+            color: 'var(--navy-700)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+          }
+        };
+      });
+      if (roll.length > 3) people.push({
+        label: '+' + (roll.length - 3) + ' more',
+        style: { font: '400 10.5px/1.35 var(--font-sans)', color: 'var(--text-muted)', padding: '0 5px' }
+      });
+
+      days.push({
+        key: is, num: d, status: label,
+        load: info.kind === 'past' ? '' : info.kind === 'open' ? info.left + ' left' : '0 left',
+        flag: info.kind === 'noFly' ? 'No flying' : info.kind === 'full' ? 'Full' : '',
+        people: people,
+        style: this.cellStyle(info.kind, mineDay ? 'mid' : sel),
+        adminStyle: this.adminCellStyle(info.kind, is === s.adminDay),
+        statusStyle: this.statusStyle(sel === 'edge' ? 'edge' : info.kind),
+        loadStyle: {
+          font: '500 10.5px/1 var(--font-mono)',
+          color: info.kind === 'full' ? 'var(--status-danger-fg)' : 'var(--text-muted)'
+        },
+        flagStyle: {
+          font: '500 10.5px/1.3 var(--font-sans)', marginTop: 'auto', paddingTop: 4, whiteSpace: 'nowrap',
+          color: info.kind === 'noFly' ? 'var(--text-muted)' : 'var(--status-danger-fg)'
+        },
+        onClick: isAdmin
+          ? (roster ? function () { self.setState({ adminDay: is }); } : function () { self.cycleFlag(is); })
+          : function () { self.pick(is, info); }
+      });
+    }
+
+    const rows = [];
+    if (trips.length) {
+      const rowBase = { display: 'flex', alignItems: 'center', gap: 12, padding: '13px 20px', borderBottom: '1px solid var(--slate-100)' };
+      const muted = { font: '400 12.5px/1.4 var(--font-sans)', color: 'var(--text-muted)' };
+      trips.forEach(function (t, ti) {
+        rows.push({
+          kind: 'Travel in', date: fmtIso(t.arrive), dow: dowIso(t.arrive),
+          note: 'Trip ' + (ti + 1) + ' · arrive the day before the first flight day. No flying.',
+          style: Object.assign({}, rowBase, { background: 'var(--slate-050)' }),
+          noteStyle: muted
+        });
+        spanDays(t.arrive, t.depart).forEach(function (d) {
+          if (d === t.arrive || d === t.depart) return;
+          const flying = t.fly.indexOf(d) !== -1;
+          const info = self.dayInfo(d, map);
+          rows.push({
+            kind: flying ? 'Flight day' : 'On site', date: fmtIso(d), dow: dowIso(d),
+            note: flying ? '1 flight · time assigned by staff'
+              : info.kind === 'noFly' ? 'No flying — aircraft in maintenance'
+              : info.kind === 'full' ? 'Slots full — no flight this day'
+              : 'On site, no flight booked',
+            style: Object.assign({}, rowBase, flying ? {} : { background: 'var(--slate-050)' }),
+            noteStyle: flying ? { font: '400 12.5px/1.4 var(--font-sans)', color: 'var(--text-body)' } : muted
+          });
+        });
+        rows.push({
+          kind: 'Travel out', date: fmtIso(t.depart), dow: dowIso(t.depart),
+          note: 'Return travel the day after the last flight day.',
+          style: Object.assign({}, rowBase, { background: 'var(--slate-050)' }),
+          noteStyle: muted
+        });
+      });
+      if (rows.length) rows[rows.length - 1].style = Object.assign({}, rows[rows.length - 1].style, { borderBottom: 'none' });
+    }
+    const cancelLead = flights.length ? daysUntil(flights[0]) : null;
+    const tagMap = {};
+    trips.forEach(function (t) {
+      spanDays(t.arrive, t.depart).forEach(function (d) { tagMap[d] = { tag: 'On site', kind: 'stay' }; });
+      tagMap[t.arrive] = { tag: 'Travel in', kind: 'travel' };
+      tagMap[t.depart] = { tag: 'Travel out', kind: 'travel' };
+      t.fly.forEach(function (d) { tagMap[d] = { tag: 'Flight', kind: 'fly' }; });
+    });
+
+    const summaryMonths = [];
+    if (trips.length) {
+      const from = parseIso(trips[0].arrive);
+      const to = parseIso(trips[trips.length - 1].depart);
+      let cy = from.getFullYear(), cm = from.getMonth();
+      while (cy < to.getFullYear() || (cy === to.getFullYear() && cm <= to.getMonth())) {
+        const totalDays = new Date(cy, cm + 1, 0).getDate();
+        const leadDays = new Date(cy, cm, 1).getDay();
+        const cells = [];
+        for (let i = 0; i < leadDays; i++) cells.push({ key: 'sb' + cm + i, num: '', tag: '', style: { minHeight: 52, visibility: 'hidden' }, tagStyle: {} });
+        for (let d = 1; d <= totalDays; d++) {
+          const is = isoOf(cy, cm, d);
+          const t = tagMap[is];
+          const cell = {
+            minHeight: 52, borderRadius: 6, padding: '6px 7px', display: 'flex',
+            flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-start',
+            border: '1px solid var(--slate-100)', background: 'var(--surface-card)', color: 'var(--text-faint)'
+          };
+          if (t && t.kind === 'fly') Object.assign(cell, { background: 'var(--surface-brand)', borderColor: 'var(--surface-brand)', color: '#fff' });
+          else if (t && t.kind === 'travel') Object.assign(cell, { background: 'var(--navy-050)', borderColor: 'var(--navy-300)', color: 'var(--navy-700)' });
+          else if (t) Object.assign(cell, { background: 'var(--slate-100)', borderColor: 'var(--slate-200)', color: 'var(--text-muted)' });
+          cells.push({
+            key: is, num: d, tag: t ? t.tag : '', style: cell,
+            tagStyle: { font: '400 11px/1.3 var(--font-sans)', color: 'inherit', opacity: t && t.kind === 'fly' ? 0.9 : 1 }
+          });
+        }
+        summaryMonths.push({ key: cy + '-' + cm, label: MON_FULL[cm] + ' ' + cy, cells: cells });
+        cm++; if (cm > 11) { cm = 0; cy++; }
+      }
+    }
+
+    const tripRows = trips.map(function (t, i) {
+      const flyLabel = t.fly.length === 1 ? fmtIso(t.fly[0]) : compactRange(t.fly[0], t.fly[t.fly.length - 1]);
+      return {
+        key: 'trip' + i, label: 'Trip ' + (i + 1),
+        detail: 'Travel in ' + fmtIso(t.arrive) + ' · fly ' + flyLabel + ' (' + t.fly.length + (t.fly.length === 1 ? ' flight' : ' flights') + ') · travel out ' + fmtIso(t.depart)
+      };
+    });
+
+    const nameOk = s.first.trim() && s.last.trim() && s.batch.trim()
+      && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((s.email || '').trim())
+      && (s.phone || '').replace(/[^0-9]/g, '').length >= 9;
+    const prefix = y + '-' + pad(mo + 1);
+    const monthFlights = Object.keys(map).filter(function (k) { return k.indexOf(prefix) === 0; })
+      .reduce(function (a, k) { return a + map[k].length; }, 0);
+    const fullDays = days.filter(function (d) { return d.flag === 'Full'; }).length;
+    const noFlyDays = days.filter(function (d) { return d.flag === 'No flying'; }).length;
+
+    const dd = s.adminDay;
+    const ddInfo = dd ? this.dayInfo(dd, map) : null;
+    const ddRoll = dd ? (map[dd] || []) : [];
+
+    return {
+      days: days,
+      isStudent: studentApp, isAdmin: isAdmin,
+      isLogin: !adminRole && !s.session && s.view !== 'signup',
+      isSignup: !adminRole && !s.session && s.view === 'signup',
+      isAdminLogin: adminRole && !s.adminAuthed,
+      signedIn: !!s.session || isAdmin,
+      sessionLabel: isAdmin ? 'Training office staff' : (s.session || ''),
+      headerStyle: {
+        background: 'var(--navy-900)', display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between', gap: 12,
+        flexWrap: narrow ? 'wrap' : 'nowrap',
+        minHeight: 56, padding: narrow ? '10px 16px' : '0 24px'
+      },
+      brandLineStyle: {
+        display: 'flex', alignItems: 'center', gap: narrow ? 10 : 14,
+        minWidth: 0, flexWrap: narrow ? 'wrap' : 'nowrap'
+      },
+      brandSubStyle: {
+        font: '500 13.5px/1.35 var(--font-sans)', color: '#C6CCE4',
+        display: narrow ? 'none' : 'block'
+      },
+      brandDividerStyle: { width: 1, height: 18, background: 'rgba(255,255,255,.22)', display: narrow ? 'none' : 'block' },
+      mainStyle: {
+        maxWidth: 1100, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20,
+        padding: narrow ? '18px 14px 48px' : '28px 24px 64px'
+      },
+      twoColStyle: {
+        display: 'grid', gap: narrow ? 14 : 20, alignItems: 'start',
+        gridTemplateColumns: stacked ? 'minmax(0,1fr)' : 'minmax(0,1fr) 300px'
+      },
+      adminTwoColStyle: {
+        display: 'grid', gap: narrow ? 14 : 20, alignItems: 'start',
+        gridTemplateColumns: stacked ? 'minmax(0,1fr)' : 'minmax(0,1fr) 320px'
+      },
+      formGridStyle: { display: 'grid', gap: 14, gridTemplateColumns: narrow ? 'minmax(0,1fr)' : '1fr 1fr' },
+      statGridStyle: { display: 'grid', gap: narrow ? 10 : 14, gridTemplateColumns: narrow ? 'repeat(2,minmax(0,1fr))' : 'repeat(4,minmax(0,1fr))' },
+      pageHeadStyle: {
+        display: 'flex', gap: narrow ? 12 : 16,
+        flexDirection: narrow ? 'column' : 'row',
+        alignItems: narrow ? 'stretch' : 'flex-end',
+        justifyContent: 'space-between'
+      },
+      stepRowStyle: { display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' },
+      calGridStyle: { display: 'grid', gridTemplateColumns: 'repeat(7,minmax(0,1fr))', gap: narrow ? 3 : 6 },
+      miniCalGridStyle: { display: 'grid', gridTemplateColumns: 'repeat(7,minmax(0,1fr))', gap: narrow ? 3 : 5 },
+      dbLabel: s.dbStatus === 'error' ? 'Database offline' : s.dbStatus === 'ok' ? 'Neon connected' : s.dbStatus === 'saving' ? 'Saving…' : 'Connecting…',
+      dbDotStyle: {
+        width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
+        background: s.dbStatus === 'error' ? 'var(--status-danger-bg)' : s.dbStatus === 'ok' ? 'var(--status-success-bg)' : 'var(--status-warning-bg)'
+      },
+      hasDbError: s.dbStatus === 'error',
+      dbError: 'Database error: ' + (s.dbError || 'unknown') + ' — changes are not being saved.',
+      authEmail: s.authEmail, authPw: s.authPw, suPw: s.suPw, suPw2: s.suPw2, adminPw: s.adminPw,
+      hasAuthError: !!s.authErr, authError: s.authErr,
+      passcodeHint: 'Issued by the training office.',
+      setAuthEmail: function (e) { self.setState({ authEmail: e.target.value }); },
+      setAuthPw: function (e) { self.setState({ authPw: e.target.value }); },
+      setSuPw: function (e) { self.setState({ suPw: e.target.value }); },
+      setSuPw2: function (e) { self.setState({ suPw2: e.target.value }); },
+      setAdminPw: function (e) { self.setState({ adminPw: e.target.value }); },
+      goLogin: function () { self.setState({ view: 'login', authErr: '' }); },
+      goSignup: function () { self.setState({ view: 'signup', authErr: '' }); },
+      doLogin: function () { self.doLogin(); },
+      doSignup: function () { self.doSignup(); },
+      signOut: function () { self.signOut(); },
+      doAdminLogin: function () {
+        if (s.adminPw === passcode) self.setState({ adminAuthed: true, adminPw: '', authErr: '' });
+        else self.setState({ authErr: 'Incorrect staff passcode.' });
+      },
+      signupInvalid: !nameOk || !s.suPw || !s.suPw2,
+      isStep1: studentApp && s.step === 1,
+      isStep2: studentApp && s.step === 2 && this.bookingWait === 0,
+      isBookingLocked: studentApp && s.step === 2 && this.bookingWait > 0,
+      lockOpenDate: fmtIso(this.bookingOpen),
+      lockCountdown: this.bookingWait === 1 ? 'Opens tomorrow' : 'Opens in ' + this.bookingWait + ' days',
+      signupNotice: this.signupWait > 0
+        ? 'Registration opens ' + fmtIso(this.signupOpen) + '. Booking opens ' + fmtIso(this.bookingOpen) + '.'
+        : 'Registration is open. Day selection opens ' + fmtIso(this.bookingOpen) + '.',
+      isStep3: studentApp && s.step === 3,
+      isDone: studentApp && s.step === 4,
+      showSummary: studentApp && s.step >= 3,
+      monthLabel: MON_FULL[mo] + ' ' + y,
+      navPrevStyle: this.navBtn(s.mi === 0),
+      navNextStyle: this.navBtn(s.mi === MONTHS.length - 1),
+      prevMonth: function () { self.setState({ mi: Math.max(0, s.mi - 1) }); },
+      nextMonth: function () { self.setState({ mi: Math.min(MONTHS.length - 1, s.mi + 1) }); },
+      tabStudentStyle: this.tabStyle(!adminRole),
+      tabAdminStyle: this.tabStyle(adminRole),
+      goStudent: function () { self.setState({ role: 'student', authErr: '' }); },
+      goAdmin: function () { self.setState({ role: 'admin', authErr: '' }); },
+      rosterTabStyle: this.segStyle(roster),
+      editTabStyle: this.segStyle(!roster),
+      goRoster: function () { self.setState({ adminMode: 'roster' }); },
+      goEdit: function () { self.setState({ adminMode: 'edit' }); },
+      adminHint: roster
+        ? 'Booked students are shown on each day to make scheduling easier.'
+        : 'Click a day to cycle its status: no flying, slots full, cleared.',
+      adminCalHint: roster ? 'Click a day to view its roster' : 'Click a day to change its status',
+      step1Chip: this.chip(s.step === 1, s.step > 1),
+      step2Chip: this.chip(s.step === 2, s.step > 2),
+      step3Chip: this.chip(s.step >= 3, false),
+      first: s.first, last: s.last, batch: s.batch, email: s.email || '', phone: s.phone || '',
+      setFirst: function (e) { self.setState({ first: e.target.value }); },
+      setLast: function (e) { self.setState({ last: e.target.value }); },
+      setBatch: function (e) { self.setState({ batch: e.target.value }); },
+      setEmail: function (e) { self.setState({ email: e.target.value }); },
+      setPhone: function (e) { self.setState({ phone: e.target.value }); },
+      step1Invalid: !nameOk,
+      step1Hint: nameOk ? 'Details complete.' : 'Enter name, batch, email and contact number to continue.',
+      contactLabel: [(s.email || '').trim(), (s.phone || '').trim()].filter(Boolean).join(' · ') || '—',
+      toStep1: function () { self.setState({ step: 1 }); },
+      toStep2: function () { self.setState({ step: 2 }); },
+      toStep3: function () { self.setState({ step: 3 }); },
+      fullName: (s.first + ' ' + s.last).trim() || '—',
+      batchLabel: s.batch.trim() || '—',
+      selectionLabel: selDays.length
+        ? trips.map(function (t) { return compactRange(t.fly[0], t.fly[t.fly.length - 1]); }).join('  +  ') || fmtIso(selDays[0])
+        : 'No days selected',
+      selectionNote: selDays.length
+        ? selDays.length + (selDays.length === 1 ? ' flying day' : ' flying days') + ' · ' + trips.length + (trips.length === 1 ? ' trip' : ' trips') + ' · travel days added around each trip'
+        : 'Tap any open day to select it. Tap again to remove. Days can be spread across months.',
+      hasError: !!s.error, error: s.error,
+      clearSel: function () { self.setState({ sel: [], error: '' }); },
+      step2Invalid: flights.length === 0,
+      planRows: rows,
+      summaryMonths: summaryMonths,
+      tripRows: tripRows,
+      flightCountLabel: flights.length + (trips.length > 1 ? ' flights · ' + trips.length + ' trips' : ' flights'),
+      travelInLabel: trips.length ? fmtIso(trips[0].arrive) : '—',
+      travelOutLabel: trips.length ? fmtIso(trips[trips.length - 1].depart) : '—',
+      bookingCode: s.code || 'Pending',
+      summaryBadge: s.step === 4 ? 'Approved' : 'Pending',
+      summaryBadgeStyle: {
+        font: '500 11.5px/1 var(--font-sans)', letterSpacing: '.02em', padding: '5px 9px', borderRadius: 4,
+        background: s.step === 4 ? 'var(--status-success-bg)' : 'var(--status-warning-bg)',
+        color: s.step === 4 ? 'var(--status-success-fg)' : 'var(--status-warning-fg)'
+      },
+      confirm: function () { self.confirm(); },
+      addDays: function () { self.startAdd(); },
+      openSettings: function () {
+        self.setState({
+          settingsOpen: true,
+          settingsFirst: s.first || '',
+          settingsLast: s.last || '',
+          settingsBatch: s.batch || '',
+          settingsPhone: s.phone || ''
+        });
+      },
+      closeSettings: function () { self.setState({ settingsOpen: false }); },
+      showSettingsModal: !!s.settingsOpen,
+      settingsFirst: s.settingsFirst !== undefined ? s.settingsFirst : (s.first || ''),
+      settingsLast: s.settingsLast !== undefined ? s.settingsLast : (s.last || ''),
+      settingsBatch: s.settingsBatch !== undefined ? s.settingsBatch : (s.batch || ''),
+      settingsPhone: s.settingsPhone !== undefined ? s.settingsPhone : (s.phone || ''),
+      setSettingsFirst: function (e) { self.setState({ settingsFirst: e.target.value }); },
+      setSettingsLast: function (e) { self.setState({ settingsLast: e.target.value }); },
+      setSettingsBatch: function (e) { self.setState({ settingsBatch: e.target.value }); },
+      setSettingsPhone: function (e) { self.setState({ settingsPhone: e.target.value }); },
+      saveSettings: function () {
+        const email = (s.session || s.email || '').trim().toLowerCase();
+        const f = (s.settingsFirst !== undefined ? s.settingsFirst : s.first || '').trim();
+        const l = (s.settingsLast !== undefined ? s.settingsLast : s.last || '').trim();
+        const b = (s.settingsBatch !== undefined ? s.settingsBatch : s.batch || '').trim();
+        const p = (s.settingsPhone !== undefined ? s.settingsPhone : s.phone || '').trim();
+        const accounts = Object.assign({}, s.accounts);
+        if (accounts[email]) {
+          accounts[email] = Object.assign({}, accounts[email], { first: f, last: l, batch: b, phone: p });
+          self.persistAccounts(accounts, email);
+        }
+        self.setState({
+          first: f, last: l, batch: b, phone: p, accounts: accounts, settingsOpen: false
+        });
+      },
+      profileInitials: (((s.first || 'S')[0] || 'S') + ((s.last || 'U')[0] || 'U')).toUpperCase(),
+      profileFullName: [s.first, s.last].filter(Boolean).join(' ') || 'Student User',
+      sessionEmail: s.session || s.email || 'student@example.com',
+      askCancel: function () { self.setState({ cancelOpen: true }); },
+      closeCancel: function () { self.setState({ cancelOpen: false }); },
+      showCancelDialog: !!s.cancelOpen,
+      cancelAllowed: cancelLead === null || cancelLead >= 7,
+      cancelDialogBody: 'Every day in this booking will be deleted and the slots released. This cannot be undone — you will have to select your days again.',
+      cancelNotice: cancelLead === null
+        ? 'Cancellations must be requested at least 7 days before the first flight day.'
+        : cancelLead >= 7
+          ? 'First flight day is ' + fmtIso(flights[0]) + ' — ' + cancelLead + ' days away. Cancellation is allowed.'
+          : 'First flight day is ' + fmtIso(flights[0]) + ' — only ' + cancelLead + ' day' + (cancelLead === 1 ? '' : 's') + ' away. Cancellation requires at least 7 days notice. Contact the training office.',
+      cancelNoticeStyle: {
+        borderRadius: 6, padding: '10px 12px', font: '400 12.5px/1.6 var(--font-sans)',
+        background: (cancelLead === null || cancelLead >= 7) ? 'var(--status-warning-bg)' : 'var(--status-danger-bg)',
+        color: (cancelLead === null || cancelLead >= 7) ? 'var(--status-warning-fg)' : 'var(--status-danger-fg)'
+      },
+      restart: function () { self.setState({ cancelOpen: false }); self.startReplace(); },
+      noBookings: s.bookings.length === 0,
+      statBookings: s.bookings.length,
+      statFlights: monthFlights,
+      statFull: fullDays,
+      statNoFly: noFlyDays,
+      dayDetailTitle: dd ? fmtIso(dd) + ' · ' + dowIso(dd) : 'No day selected',
+      dayDetailMeta: ddInfo
+        ? (ddInfo.kind === 'noFly' ? 'No flying — aircraft in maintenance'
+          : ddInfo.kind === 'full' ? 'Slots full — 0 slots left of ' + this.slots
+          : ddInfo.left + ' slots left of ' + this.slots + ' · ' + ddRoll.length + ' booked')
+        : 'Select a day in the calendar.',
+      dayDetailRows: ddRoll.map(function (b) {
+        return {
+          name: b.name,
+          batch: b.batch + ' · ' + b.id,
+          contact: [b.email, b.phone].filter(Boolean).join(' · ')
+        };
+      }),
+      dayDetailEmpty: ddRoll.length ? '' : 'No bookings on this day.',
+      noDaySelected: !dd,
+      markNoFly: function () { self.setFlag(dd, 'noFly'); },
+      markFull: function () { self.setFlag(dd, 'full'); },
+      clearFlag: function () { self.setFlag(dd, null); },
+      bookingRows: s.bookings.slice().reverse().slice(0, 8).map(function (b) {
+        return {
+          id: b.id, name: b.name, batch: b.batch, count: b.days.length,
+          email: b.email || '—',
+          range: compactRange(b.days[0], b.days[b.days.length - 1])
+            + (spanDays(b.days[0], b.days[b.days.length - 1]).length === b.days.length ? '' : ' (split)')
+        };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

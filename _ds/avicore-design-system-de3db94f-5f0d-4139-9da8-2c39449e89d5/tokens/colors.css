@@ -1,0 +1,76 @@
+/* AviCore — Color tokens
+   Palette derived from the Thai Inter Flying mark (deep navy + silver/steel). */
+:root {
+  /* Base — navy scale (primary brand hue, from logo) */
+  --navy-950: #0C1230;
+  --navy-900: #131C46;
+  --navy-800: #1A2559;
+  --navy-700: #22307A; /* brand primary */
+  --navy-600: #2E3F97;
+  --navy-500: #3E52B4;
+  --navy-400: #6375C9;
+  --navy-300: #93A0DC;
+  --navy-200: #C2CAEE;
+  --navy-100: #E2E7F8;
+  --navy-050: #F2F4FC;
+
+  /* Base — steel/slate neutrals (silver of the mark, cooled) */
+  --slate-900: #171B26;
+  --slate-800: #232937;
+  --slate-700: #333B4E;
+  --slate-600: #4A5468;
+  --slate-500: #647087;
+  --slate-400: #8792A6;
+  --slate-300: #AEB7C7;
+  --slate-200: #D3D9E3;
+  --slate-100: #E8ECF2;
+  --slate-050: #F5F7FA;
+  --white: #FFFFFF;
+
+  /* Base — semantic hues */
+  --green-600: #1E7F46;
+  --green-100: #DCF3E4;
+  --amber-600: #9A6700;
+  --amber-100: #FBEFD0;
+  --red-600: #C0362C;
+  --red-100: #FBE2DF;
+  --sky-600: #0E6FBE;
+  --sky-100: #DDEEFB;
+
+  /* Semantic — surfaces */
+  --surface-page: var(--slate-050);
+  --surface-card: var(--white);
+  --surface-sunken: var(--slate-100);
+  --surface-sidebar: var(--navy-900);
+  --surface-sidebar-active: rgba(255, 255, 255, 0.10);
+  --surface-brand: var(--navy-700);
+  --surface-brand-hover: var(--navy-800);
+  --surface-brand-subtle: var(--navy-050);
+
+  /* Semantic — text */
+  --text-heading: var(--slate-900);
+  --text-body: var(--slate-700);
+  --text-muted: var(--slate-500);
+  --text-faint: var(--slate-400);
+  --text-on-brand: var(--white);
+  --text-on-sidebar: #C6CCE4;
+  --text-on-sidebar-active: var(--white);
+  --text-link: var(--navy-600);
+
+  /* Semantic — borders */
+  --border-default: var(--slate-200);
+  --border-strong: var(--slate-300);
+  --border-focus: var(--navy-500);
+
+  /* Semantic — status */
+  --status-success-fg: var(--green-600);
+  --status-success-bg: var(--green-100);
+  --status-warning-fg: var(--amber-600);
+  --status-warning-bg: var(--amber-100);
+  --status-danger-fg: var(--red-600);
+  --status-danger-bg: var(--red-100);
+  --status-info-fg: var(--sky-600);
+  --status-info-bg: var(--sky-100);
+  --status-neutral-fg: var(--slate-600);
+  --status-neutral-bg: var(--slate-100);
+}

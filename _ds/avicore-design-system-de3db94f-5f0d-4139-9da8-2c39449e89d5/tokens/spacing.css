@@ -1,0 +1,36 @@
+/* AviCore — Spacing, radii, shadows, motion */
+:root {
+  /* Spacing — 4px base */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Radii */
+  --radius-sm: 4px;   /* badges, tags */
+  --radius-md: 6px;   /* controls: buttons, inputs */
+  --radius-lg: 10px;  /* cards, dialogs */
+  --radius-full: 999px;
+
+  /* Shadows — quiet, cool-tinted */
+  --shadow-card: 0 1px 2px rgba(19, 28, 70, 0.06), 0 1px 3px rgba(19, 28, 70, 0.04);
+  --shadow-raised: 0 4px 12px rgba(19, 28, 70, 0.10), 0 2px 4px rgba(19, 28, 70, 0.06);
+  --shadow-overlay: 0 12px 32px rgba(19, 28, 70, 0.18), 0 4px 8px rgba(19, 28, 70, 0.08);
+  --shadow-focus: 0 0 0 3px rgba(62, 82, 180, 0.25);
+
+  /* Motion — brief, functional */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1); /* @kind other */
+  --duration-fast: 120ms; /* @kind other */
+  --duration-normal: 200ms; /* @kind other */
+
+  /* Layout */
+  --sidebar-width: 232px;
+  --topbar-height: 56px;
+  --control-height: 34px;
+  --control-height-sm: 28px;
+}
