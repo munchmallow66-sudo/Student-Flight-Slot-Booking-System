@@ -19,29 +19,526 @@
   body { margin: 0; background: var(--surface-page); }
   a { color: var(--text-link); text-decoration: none; }
   a:hover { color: var(--navy-800); text-decoration: underline; }
+
+  /* ═══════════════════════════════════════════
+     Glass Login UI — Dark Sky Background
+     ═══════════════════════════════════════════ */
+
+  /* Full-viewport dark sky background for auth pages */
+  .glass-auth-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+      linear-gradient(180deg, rgba(10, 14, 26, 0.55) 0%, rgba(15, 23, 42, 0.7) 100%),
+      url('uploads/login_bg.png') center/cover no-repeat;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* Subtle stars effect */
+  .glass-auth-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 35%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 45% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 25%, rgba(255,255,255,0.25) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 45%, rgba(255,255,255,0.35) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 85% 15%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 55%, rgba(255,255,255,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 65%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 50%, rgba(255,255,255,0.15) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 40%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 5% 80%, rgba(255,255,255,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 70%, rgba(255,255,255,0.25) 0%, transparent 100%);
+    animation: twinkle 6s ease-in-out infinite alternate;
+  }
+
+  /* Silhouette tree line */
+  .glass-auth-bg::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 35%;
+    background:
+      /* Tree silhouettes via polygon-like gradients */
+      linear-gradient(175deg, transparent 42%, #0d1420 43%),
+      linear-gradient(185deg, transparent 38%, #0d1420 39%),
+      linear-gradient(170deg, transparent 46%, #0f1825 47%);
+    opacity: 0.7;
+  }
+
+  @keyframes twinkle {
+    0% { opacity: 0.6; }
+    100% { opacity: 1; }
+  }
+
+  /* Auth page wrapper — centers glass card */
+  .auth-page-wrapper {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    box-sizing: border-box;
+  }
+
+  /* Glass card */
+  .glass-card {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 40px 36px;
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    animation: cardFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .glass-card-wide {
+    max-width: 520px;
+  }
+
+  @keyframes cardFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(24px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Close button */
+  .glass-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    line-height: 1;
+  }
+
+  .glass-close-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.35);
+  }
+
+  /* Title */
+  .glass-title {
+    margin: 0 0 28px 0;
+    font: 700 26px/1.2 var(--font-sans);
+    color: #ffffff;
+    text-align: center;
+    letter-spacing: -0.02em;
+  }
+
+  .glass-subtitle {
+    display: block;
+    font: 400 13px/1.5 var(--font-sans);
+    color: #cbd5e1;
+    text-align: center;
+    margin-top: 6px;
+    letter-spacing: 0;
+  }
+
+  /* Input group wrapper */
+  .glass-input-group {
+    position: relative;
+    margin-bottom: 18px;
+  }
+
+  /* High contrast label above input */
+  .glass-card label,
+  .glass-card .sc-label,
+  .glass-card [class*="label"] {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+  }
+
+  .glass-card .sc-helper,
+  .glass-card [class*="helper"] {
+    color: #cbd5e1 !important;
+  }
+
+  /* Input container box (ONLY the input wrapper span) */
+  .glass-card label > span:first-of-type {
+    background: rgba(15, 23, 42, 0.65) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    border-radius: 10px !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .glass-card label > span:first-of-type:focus-within {
+    border-color: #60a5fa !important;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3) !important;
+    background: rgba(15, 23, 42, 0.85) !important;
+  }
+
+  /* Helper text span (plain text without box) */
+  .glass-card label > span:last-of-type:not(:first-of-type) {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #cbd5e1 !important;
+    font-size: 11.5px !important;
+    font-weight: 400 !important;
+    padding: 2px 0 0 0 !important;
+  }
+
+  /* Override inputs inside glass card — Crisp White Text */
+  .glass-card input,
+  .glass-card select,
+  .glass-card textarea {
+    background: transparent !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .glass-card input::placeholder {
+    color: rgba(255, 255, 255, 0.45) !important;
+  }
+
+  /* Remember & Forgot row */
+  .glass-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    font: 400 12.5px/1 var(--font-sans);
+  }
+
+  .glass-meta-row label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    margin: 0;
+  }
+
+  .glass-meta-row input[type="checkbox"] {
+    width: 15px !important;
+    height: 15px !important;
+    accent-color: #60a5fa;
+    border-radius: 3px !important;
+    margin: 0 !important;
+  }
+
+  .glass-meta-row a,
+  .glass-meta-row button {
+    color: rgba(255, 255, 255, 0.55);
+    font: 400 12.5px/1 var(--font-sans);
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .glass-meta-row a:hover,
+  .glass-meta-row button:hover {
+    color: #ffffff;
+    text-decoration: none;
+  }
+
+  /* Primary dark button */
+  .glass-btn-primary {
+    width: 100%;
+    padding: 13px 20px;
+    border: none;
+    border-radius: 10px;
+    background: #0f172a;
+    color: #ffffff;
+    font: 600 14px/1 var(--font-sans);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.01em;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glass-btn-primary:hover {
+    background: #1e293b;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    transform: translateY(-1px);
+  }
+
+  .glass-btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Ghost/outline button */
+  .glass-btn-ghost {
+    width: 100%;
+    padding: 11px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.7);
+    font: 500 13px/1 var(--font-sans);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .glass-btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+  }
+
+  /* Badge */
+  .glass-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font: 500 11px/1 var(--font-sans);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .glass-badge-amber {
+    border-color: rgba(251, 191, 36, 0.3);
+    color: #fbbf24;
+  }
+
+  /* Divider */
+  .glass-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 20px 0;
+    border: none;
+  }
+
+  /* Footer text */
+  .glass-footer-text {
+    text-align: center;
+    font: 400 13px/1.5 var(--font-sans);
+    color: #cbd5e1;
+    margin-top: 20px;
+  }
+
+  .glass-footer-text button {
+    border: none;
+    background: none;
+    color: #60a5fa;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0 4px;
+    font-size: inherit;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .glass-footer-text button:hover {
+    color: #93c5fd;
+    text-decoration: underline;
+  }
+
+  /* Switch portal pill */
+  .glass-switch-btn {
+    font: 500 11.5px/1 var(--font-sans);
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    color: #f1f5f9;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+
+  .glass-switch-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: #ffffff;
+  }
+
+
+  /* Error banner */
+  .glass-error-banner {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+    border-radius: 10px;
+    padding: 11px 14px;
+    font: 400 12.5px/1.5 var(--font-sans);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  /* Signup notice box */
+  .glass-notice-box {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font: 400 12px/1.5 var(--font-sans);
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 6px;
+  }
+
+  /* Signup form grid */
+  .glass-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 14px;
+  }
+
+  .glass-form-grid-full {
+    grid-column: 1 / -1;
+  }
+
+  /* Logo in glass card */
+  .glass-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+
+  .glass-logo-img {
+    height: 48px;
+    width: 48px;
+    background: #ffffff;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    flex-shrink: 0;
+  }
+
+  .glass-logo-img img {
+    height: 38px;
+    width: 38px;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* ═══════════════════════════════════════════
+     System-wide Responsive WebApp Styles
+     ═══════════════════════════════════════════ */
+
+  @media (max-width: 768px) {
+    .auth-page-wrapper {
+      padding: 20px 14px !important;
+      min-height: 100dvh !important;
+    }
+
+    .glass-card {
+      padding: 32px 24px !important;
+      border-radius: 16px !important;
+      max-width: 100% !important;
+    }
+
+    .glass-card-wide {
+      max-width: 100% !important;
+    }
+
+    .glass-title {
+      font-size: 22px !important;
+    }
+
+    .glass-form-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+  @media (max-width: 640px) {
+    body {
+      font-size: 13px;
+    }
+
+    header {
+      padding: 10px 14px !important;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 10px !important;
+      height: auto !important;
+    }
+
+    header > div {
+      justify-content: space-between !important;
+      width: 100% !important;
+      flex-wrap: wrap !important;
+    }
+
+    .glass-card {
+      padding: 28px 18px !important;
+    }
+
+    .glass-btn-primary {
+      padding: 12px 16px !important;
+    }
+
+    button, input, select, textarea {
+      font-size: 14px !important;
+    }
+  }
 </style>
 </helmet>
 
 <div style="min-height:100vh; background:var(--surface-page); font-family:var(--font-sans); color:var(--text-body);">
 
   <header style="{{ headerStyle }}">
-    <div style="display:flex; align-items:center; gap:14px;">
+    <div style="display:flex; align-items:center; gap:10px;">
       <span style="height:36px; width:36px; background:#fff; border-radius:6px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
         <img src="uploads/images.jpg" alt="Thai Inter Flying" style="height:32px; width:32px; object-fit:contain; display:block;">
       </span>
-      <span style="font:600 13.5px/1.25 var(--font-sans); color:#fff; letter-spacing:0.01em;">Thai Inter Flying</span>
+      <span style="font:600 13.5px/1.25 var(--font-sans); color:#fff; letter-spacing:0.01em; white-space:nowrap;">Thai Inter Flying</span>
       <span style="{{ brandDividerStyle }}"></span>
       <span style="{{ brandSubStyle }}">Flight Slot Booking — Student Flight Day Reservation</span>
     </div>
-    <div style="display:flex; align-items:center; gap:14px;">
-      <span style="font:400 12.5px/1 var(--font-sans); color:#C6CCE4;">{{ sessionLabel }}</span>
-      <div style="display:flex; gap:6px; background:rgba(255,255,255,.08); padding:3px; border-radius:6px;">
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <span style="font:400 12px/1 var(--font-sans); color:#C6CCE4; white-space:nowrap;">{{ sessionLabel }}</span>
+      <div style="display:flex; gap:4px; background:rgba(255,255,255,.08); padding:3px; border-radius:6px;">
         <button onClick="{{ goStudent }}" style="{{ tabStudentStyle }}">Student</button>
         <button onClick="{{ goAdmin }}" style="{{ tabAdminStyle }}">Admin</button>
       </div>
       <sc-if value="{{ signedIn }}" hint-placeholder-val="{{ false }}">
-        <button onClick="{{ openSettings }}" style="font:500 12.5px/1 var(--font-sans); padding:7px 12px; border-radius:5px; border:1px solid rgba(255,255,255,.28); background:rgba(255,255,255,.1); color:#fff; cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; gap:6px;">⚙️ Settings</button>
-        <button onClick="{{ signOut }}" style="font:500 12.5px/1 var(--font-sans); padding:7px 12px; border-radius:5px; border:1px solid rgba(255,255,255,.28); background:transparent; color:#fff; cursor:pointer; white-space:nowrap;">Sign out</button>
+        <button onClick="{{ openSettings }}" style="font:500 12px/1 var(--font-sans); padding:6px 10px; border-radius:5px; border:1px solid rgba(255,255,255,.28); background:rgba(255,255,255,.1); color:#fff; cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; gap:4px;">⚙️ Settings</button>
+        <button onClick="{{ signOut }}" style="font:500 12px/1 var(--font-sans); padding:6px 10px; border-radius:5px; border:1px solid rgba(255,255,255,.28); background:transparent; color:#fff; cursor:pointer; white-space:nowrap;">Sign out</button>
       </sc-if>
     </div>
   </header>
@@ -53,191 +550,156 @@
     </sc-if>
 
     <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
-      <div style="max-width:920px; margin:24px auto 0; background:var(--surface-card); border:1px solid var(--border-default); border-radius:16px; box-shadow:0 20px 40px rgba(10, 17, 40, 0.12); overflow:hidden; display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));">
-        <!-- Hero Banner Panel -->
-        <div style="background:linear-gradient(135deg, #0A1128 0%, #1C2541 60%, #101C3D 100%); padding:36px 32px; display:flex; flex-direction:column; justify-content:space-between; color:#fff; position:relative; overflow:hidden;">
-          <div style="position:absolute; top:-40px; right:-40px; width:180px; height:180px; background:radial-gradient(circle, rgba(74, 144, 226, 0.18) 0%, transparent 70%); border-radius:50%; pointer-events:none;"></div>
-          <div style="display:flex; flex-direction:column; gap:20px; z-index:1;">
-            <div style="display:flex; align-items:center; gap:12px;">
-              <span style="height:44px; width:44px; background:#fff; border-radius:10px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex-shrink:0;">
-                <img src="uploads/images.jpg" alt="Thai Inter Flying" style="height:36px; width:36px; object-fit:contain; display:block;">
-              </span>
-              <div>
-                <span style="font:700 15px/1.2 var(--font-sans); color:#fff; letter-spacing:0.02em; display:block;">Thai Inter Flying</span>
-                <span style="font:400 12px/1.3 var(--font-sans); color:#A0AEC0;">Flight Training Academy</span>
-              </div>
-            </div>
-            <div style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
-              <span style="display:inline-flex; align-items:center; gap:6px; background:rgba(74,144,226,0.15); border:1px solid rgba(74,144,226,0.3); color:#63B3ED; padding:4px 10px; border-radius:20px; font:500 11.5px/1 var(--font-sans); width:fit-content;">
-                ✈️ BE76 Multi-Engine Program
-              </span>
-              <h2 style="margin:0; font:700 24px/1.3 var(--font-sans); color:#fff;">Student Flight Slot Booking System</h2>
-              <p style="margin:0; font:400 13px/1.6 var(--font-sans); color:#CBD5E0;">Reserve flight dates, manage multi-day trips, and view real-time training aircraft slot availability.</p>
-            </div>
-          </div>
-          <div style="display:flex; flex-direction:column; gap:10px; margin-top:32px; border-top:1px solid rgba(255,255,255,0.1); padding-top:18px; z-index:1;">
-            <div style="display:flex; align-items:center; gap:8px; font:400 12px/1.4 var(--font-sans); color:#E2E8F0;">
-              <span style="width:6px; height:6px; border-radius:50%; background:#48BB78; display:inline-block;"></span>
-              <span>1 Flight per Student / Day · Max 5 Slots / Day</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:8px; font:400 12px/1.4 var(--font-sans); color:#E2E8F0;">
-              <span style="width:6px; height:6px; border-radius:50%; background:#4299E1; display:inline-block;"></span>
-              <span>Automatic Travel-In & Travel-Out Day Grouping</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Form Panel -->
-        <div style="padding:36px 32px; display:flex; flex-direction:column; justify-content:center; gap:20px; background:var(--surface-card);">
-          <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border-default); padding-bottom:14px;">
-            <div>
-              <h1 style="margin:0; font:700 20px/1.3 var(--font-sans); color:var(--text-heading);">Student Sign In</h1>
-              <span style="font:400 12.5px/1.5 var(--font-sans); color:var(--text-muted);">Enter registered email and password</span>
-            </div>
-            <button onClick="{{ goAdmin }}" style="font:500 11.5px/1 var(--font-sans); padding:6px 10px; border-radius:6px; border:1px solid var(--border-default); background:var(--slate-050); color:var(--navy-700); cursor:pointer; white-space:nowrap; transition:all 0.2s;">Staff Portal ›</button>
+      <div class="glass-auth-bg"></div>
+      <div class="auth-page-wrapper">
+        <div class="glass-card">
+          <!-- Logo -->
+          <div class="glass-logo">
+            <span class="glass-logo-img">
+              <img src="uploads/images.jpg" alt="Thai Inter Flying">
+            </span>
           </div>
 
-          <div style="display:flex; flex-direction:column; gap:14px;">
-            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Email Address" placeholder="name@example.com" type="email" value="{{ authEmail }}" on-change="{{ setAuthEmail }}" hint-size="100%,66px"></x-import>
+          <!-- Title -->
+          <h1 class="glass-title">
+            Login
+            <span class="glass-subtitle">Student Flight Slot Booking System</span>
+          </h1>
+
+          <!-- Form -->
+          <div class="glass-input-group">
+            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Email" placeholder="name@example.com" type="email" value="{{ authEmail }}" on-change="{{ setAuthEmail }}" hint-size="100%,66px"></x-import>
+          </div>
+
+          <div class="glass-input-group">
             <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Password" placeholder="Enter your password" type="password" value="{{ authPw }}" on-change="{{ setAuthPw }}" hint-size="100%,66px"></x-import>
           </div>
 
           <sc-if value="{{ hasAuthError }}" hint-placeholder-val="{{ false }}">
-            <div style="background:var(--status-danger-bg); color:var(--status-danger-fg); border-radius:8px; padding:12px 14px; font:400 12.5px/1.5 var(--font-sans); display:flex; align-items:center; gap:8px;">
-              <span>⚠️</span>
+            <div class="glass-error-banner">
               <span>{{ authError }}</span>
             </div>
           </sc-if>
 
-          <div style="display:flex; flex-direction:column; gap:12px; border-top:1px solid var(--border-default); padding-top:18px;">
-            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" on-click="{{ doLogin }}" style="width:100%" hint-size="100%,42px">Sign in to Account</x-import>
-            <div style="display:flex; align-items:center; justify-content:center; gap:6px; font:400 12.5px/1.5 var(--font-sans); color:var(--text-muted); margin-top:4px;">
-              <span>Don't have an account?</span>
-              <button onClick="{{ goSignup }}" style="border:none; background:none; color:var(--text-link); font-weight:600; cursor:pointer; padding:0;">Create an account</button>
-            </div>
+          <!-- Login Button -->
+          <button onClick="{{ doLogin }}" class="glass-btn-primary">Login</button>
+
+          <!-- Footer -->
+          <div class="glass-footer-text">
+            <span>Don't have an account?</span>
+            <button onClick="{{ goSignup }}">Register</button>
+          </div>
+
+          <div style="display:flex; justify-content:center; margin-top:12px;">
+            <button onClick="{{ goAdmin }}" class="glass-switch-btn">Staff Portal</button>
           </div>
         </div>
       </div>
     </sc-if>
 
     <sc-if value="{{ isSignup }}" hint-placeholder-val="{{ false }}">
-      <div style="max-width:920px; margin:24px auto 0; background:var(--surface-card); border:1px solid var(--border-default); border-radius:16px; box-shadow:0 20px 40px rgba(10, 17, 40, 0.12); overflow:hidden; display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));">
-        <!-- Hero Banner Panel -->
-        <div style="background:linear-gradient(135deg, #0A1128 0%, #1C2541 60%, #101C3D 100%); padding:36px 32px; display:flex; flex-direction:column; justify-content:space-between; color:#fff; position:relative; overflow:hidden;">
-          <div style="position:absolute; top:-40px; right:-40px; width:180px; height:180px; background:radial-gradient(circle, rgba(74, 144, 226, 0.18) 0%, transparent 70%); border-radius:50%; pointer-events:none;"></div>
-          <div style="display:flex; flex-direction:column; gap:20px; z-index:1;">
-            <div style="display:flex; align-items:center; gap:12px;">
-              <span style="height:44px; width:44px; background:#fff; border-radius:10px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex-shrink:0;">
-                <img src="uploads/images.jpg" alt="Thai Inter Flying" style="height:36px; width:36px; object-fit:contain; display:block;">
-              </span>
-              <div>
-                <span style="font:700 15px/1.2 var(--font-sans); color:#fff; letter-spacing:0.02em; display:block;">Thai Inter Flying</span>
-                <span style="font:400 12px/1.3 var(--font-sans); color:#A0AEC0;">Flight Training Academy</span>
-              </div>
-            </div>
-            <div style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
-              <span style="display:inline-flex; align-items:center; gap:6px; background:rgba(74,144,226,0.15); border:1px solid rgba(74,144,226,0.3); color:#63B3ED; padding:4px 10px; border-radius:20px; font:500 11.5px/1 var(--font-sans); width:fit-content;">
-                📝 Student Account Registration
-              </span>
-              <h2 style="margin:0; font:700 24px/1.3 var(--font-sans); color:#fff;">Register Once for Flight Booking</h2>
-              <p style="margin:0; font:400 13px/1.6 var(--font-sans); color:#CBD5E0;">Create your student pilot profile once. Your training batch and contact details will automatically autofill future flight reservations.</p>
-            </div>
-          </div>
-          <div style="display:flex; flex-direction:column; gap:10px; margin-top:32px; border-top:1px solid rgba(255,255,255,0.1); padding-top:18px; z-index:1;">
-            <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:12px 14px; font:400 12.5px/1.5 var(--font-sans); color:#E2E8F0;">
-              {{ signupNotice }}
-            </div>
-          </div>
-        </div>
-
-        <!-- Form Panel -->
-        <div style="padding:32px; display:flex; flex-direction:column; justify-content:center; gap:18px; background:var(--surface-card);">
-          <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border-default); padding-bottom:12px;">
-            <div>
-              <h1 style="margin:0; font:700 20px/1.3 var(--font-sans); color:var(--text-heading);">Create Account</h1>
-              <span style="font:400 12.5px/1.5 var(--font-sans); color:var(--text-muted);">Fill in student pilot details</span>
-            </div>
-            <button onClick="{{ goLogin }}" style="font:500 11.5px/1 var(--font-sans); border:none; background:none; color:var(--text-link); cursor:pointer;">Sign in ›</button>
+      <div class="glass-auth-bg"></div>
+      <div class="auth-page-wrapper">
+        <div class="glass-card glass-card-wide">
+          <!-- Logo -->
+          <div class="glass-logo">
+            <span class="glass-logo-img">
+              <img src="uploads/images.jpg" alt="Thai Inter Flying">
+            </span>
           </div>
 
-          <div style="{{ formGridStyle }}">
-            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="First name" placeholder="First name" value="{{ first }}" on-change="{{ setFirst }}" hint-size="100%,66px"></x-import>
-            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Last name" placeholder="Last name" value="{{ last }}" on-change="{{ setLast }}" hint-size="100%,66px"></x-import>
-            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Batch" placeholder="e.g. TIF-27" value="{{ batch }}" on-change="{{ setBatch }}" hint-size="100%,66px"></x-import>
-            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Contact number" placeholder="08X-XXX-XXXX" type="tel" value="{{ phone }}" on-change="{{ setPhone }}" hint-size="100%,66px"></x-import>
-            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Email Address" placeholder="name@example.com" type="email" helper="Registered email address" value="{{ email }}" on-change="{{ setEmail }}" hint-size="100%,66px"></x-import>
-            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Password" placeholder="Min 8 characters" type="password" value="{{ suPw }}" on-change="{{ setSuPw }}" hint-size="100%,66px"></x-import>
-            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Confirm password" placeholder="Re-enter password" type="password" value="{{ suPw2 }}" on-change="{{ setSuPw2 }}" hint-size="100%,66px"></x-import>
+          <!-- Title -->
+          <h1 class="glass-title">
+            Create Account
+            <span class="glass-subtitle">Register your student pilot profile</span>
+          </h1>
+
+          <!-- Notice -->
+          <div class="glass-notice-box">
+            {{ signupNotice }}
+          </div>
+
+          <!-- Form Grid -->
+          <div class="glass-form-grid">
+            <div class="glass-input-group">
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="First name" placeholder="First name" value="{{ first }}" on-change="{{ setFirst }}" hint-size="100%,66px"></x-import>
+            </div>
+            <div class="glass-input-group">
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Last name" placeholder="Last name" value="{{ last }}" on-change="{{ setLast }}" hint-size="100%,66px"></x-import>
+            </div>
+            <div class="glass-input-group">
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Batch" placeholder="e.g. TIF-27" value="{{ batch }}" on-change="{{ setBatch }}" hint-size="100%,66px"></x-import>
+            </div>
+            <div class="glass-input-group">
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Contact number" placeholder="08X-XXX-XXXX" type="tel" value="{{ phone }}" on-change="{{ setPhone }}" hint-size="100%,66px"></x-import>
+            </div>
+            <div class="glass-input-group glass-form-grid-full">
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Email Address" placeholder="name@example.com" type="email" value="{{ email }}" on-change="{{ setEmail }}" hint-size="100%,66px"></x-import>
+            </div>
+            <div class="glass-input-group">
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Password" placeholder="Min 8 characters" type="password" value="{{ suPw }}" on-change="{{ setSuPw }}" hint-size="100%,66px"></x-import>
+            </div>
+            <div class="glass-input-group">
+              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Confirm password" placeholder="Re-enter password" type="password" value="{{ suPw2 }}" on-change="{{ setSuPw2 }}" hint-size="100%,66px"></x-import>
+            </div>
           </div>
 
           <sc-if value="{{ hasAuthError }}" hint-placeholder-val="{{ false }}">
-            <div style="background:var(--status-danger-bg); color:var(--status-danger-fg); border-radius:8px; padding:10px 12px; font:400 12.5px/1.5 var(--font-sans); display:flex; align-items:center; gap:8px;">
-              <span>⚠️</span>
+            <div class="glass-error-banner">
               <span>{{ authError }}</span>
             </div>
           </sc-if>
 
-          <div style="display:flex; align-items:center; gap:12px; border-top:1px solid var(--border-default); padding-top:16px;">
-            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" on-click="{{ doSignup }}" disabled="{{ signupInvalid }}" hint-size="auto,40px">Create account</x-import>
-            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" variant="ghost" on-click="{{ goLogin }}" hint-size="auto,40px">Back to sign in</x-import>
+          <!-- Buttons -->
+          <div style="display:flex; flex-direction:column; gap:10px; margin-top:6px;">
+            <button onClick="{{ doSignup }}" class="glass-btn-primary">Create account</button>
+            <button onClick="{{ goLogin }}" class="glass-btn-ghost">Back to sign in</button>
           </div>
         </div>
       </div>
     </sc-if>
 
     <sc-if value="{{ isAdminLogin }}" hint-placeholder-val="{{ false }}">
-      <div style="max-width:920px; margin:24px auto 0; background:var(--surface-card); border:1px solid var(--border-default); border-radius:16px; box-shadow:0 20px 40px rgba(10, 17, 40, 0.12); overflow:hidden; display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));">
-        <!-- Hero Banner Panel -->
-        <div style="background:linear-gradient(135deg, #0F172A 0%, #1E293B 60%, #0F172A 100%); padding:36px 32px; display:flex; flex-direction:column; justify-content:space-between; color:#fff; position:relative; overflow:hidden;">
-          <div style="position:absolute; top:-40px; right:-40px; width:180px; height:180px; background:radial-gradient(circle, rgba(234, 179, 8, 0.15) 0%, transparent 70%); border-radius:50%; pointer-events:none;"></div>
-          <div style="display:flex; flex-direction:column; gap:20px; z-index:1;">
-            <div style="display:flex; align-items:center; gap:12px;">
-              <span style="height:44px; width:44px; background:#fff; border-radius:10px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex-shrink:0;">
-                <img src="uploads/images.jpg" alt="Thai Inter Flying" style="height:36px; width:36px; object-fit:contain; display:block;">
-              </span>
-              <div>
-                <span style="font:700 15px/1.2 var(--font-sans); color:#fff; letter-spacing:0.02em; display:block;">Thai Inter Flying</span>
-                <span style="font:400 12px/1.3 var(--font-sans); color:#94A3B8;">Flight Training Office</span>
-              </div>
-            </div>
-            <div style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
-              <span style="display:inline-flex; align-items:center; gap:6px; background:rgba(234,179,8,0.15); border:1px solid rgba(234,179,8,0.3); color:#FACC15; padding:4px 10px; border-radius:20px; font:500 11.5px/1 var(--font-sans); width:fit-content;">
-                🛡️ Staff & Operations Portal
-              </span>
-              <h2 style="margin:0; font:700 24px/1.3 var(--font-sans); color:#fff;">Training Staff Access</h2>
-              <p style="margin:0; font:400 13px/1.6 var(--font-sans); color:#94A3B8;">Manage daily flight rosters, set maintenance no-fly days, toggle slot limits, and view flight reservations.</p>
-            </div>
-          </div>
-          <div style="display:flex; flex-direction:column; gap:10px; margin-top:32px; border-top:1px solid rgba(255,255,255,0.1); padding-top:18px; z-index:1;">
-            <div style="display:flex; align-items:center; gap:8px; font:400 12px/1.4 var(--font-sans); color:#CBD5E1;">
-              <span style="width:6px; height:6px; border-radius:50%; background:#F59E0B; display:inline-block;"></span>
-              <span>Restricted to authorized Thai Inter Flying staff</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Form Panel -->
-        <div style="padding:36px 32px; display:flex; flex-direction:column; justify-content:center; gap:20px; background:var(--surface-card);">
-          <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border-default); padding-bottom:14px;">
-            <div>
-              <h1 style="margin:0; font:700 20px/1.3 var(--font-sans); color:var(--text-heading);">Staff Sign In</h1>
-              <span style="font:400 12.5px/1.5 var(--font-sans); color:var(--text-muted);">Enter training office staff passcode</span>
-            </div>
-            <button onClick="{{ goStudent }}" style="font:500 11.5px/1 var(--font-sans); padding:6px 10px; border-radius:6px; border:1px solid var(--border-default); background:var(--slate-050); color:var(--navy-700); cursor:pointer; white-space:nowrap;">Student Portal ›</button>
+      <div class="glass-auth-bg"></div>
+      <div class="auth-page-wrapper">
+        <div class="glass-card">
+          <!-- Logo -->
+          <div class="glass-logo">
+            <span class="glass-logo-img">
+              <img src="uploads/images.jpg" alt="Thai Inter Flying">
+            </span>
           </div>
 
-          <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Staff Passcode" placeholder="Enter staff passcode" type="password" helper="{{ passcodeHint }}" value="{{ adminPw }}" on-change="{{ setAdminPw }}" hint-size="100%,66px"></x-import>
+          <!-- Title -->
+          <h1 class="glass-title">
+            Staff Login
+            <span class="glass-subtitle">Training Office Access</span>
+          </h1>
+
+          <!-- Badge -->
+          <div style="display:flex; justify-content:center; margin-bottom:20px;">
+            <span class="glass-badge glass-badge-amber">Staff &amp; Operations</span>
+          </div>
+
+          <!-- Form -->
+          <div class="glass-input-group">
+            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Staff Passcode" placeholder="Enter staff passcode" type="password" helper="{{ passcodeHint }}" value="{{ adminPw }}" on-change="{{ setAdminPw }}" hint-size="100%,66px"></x-import>
+          </div>
 
           <sc-if value="{{ hasAuthError }}" hint-placeholder-val="{{ false }}">
-            <div style="background:var(--status-danger-bg); color:var(--status-danger-fg); border-radius:8px; padding:12px 14px; font:400 12.5px/1.5 var(--font-sans); display:flex; align-items:center; gap:8px;">
-              <span>⚠️</span>
+            <div class="glass-error-banner">
               <span>{{ authError }}</span>
             </div>
           </sc-if>
 
-          <div style="display:flex; flex-direction:column; gap:10px; border-top:1px solid var(--border-default); padding-top:16px;">
-            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" on-click="{{ doAdminLogin }}" style="width:100%" hint-size="100%,40px">Authenticate as Staff</x-import>
-            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" variant="ghost" on-click="{{ goStudent }}" style="width:100%" hint-size="100%,40px">Back to student booking</x-import>
+          <!-- Buttons -->
+          <div style="display:flex; flex-direction:column; gap:10px; margin-top:6px;">
+            <button onClick="{{ doAdminLogin }}" class="glass-btn-primary">Authenticate</button>
+            <button onClick="{{ goStudent }}" class="glass-btn-ghost">Back to student booking</button>
+          </div>
+
+          <div style="display:flex; justify-content:center; margin-top:12px;">
+            <button onClick="{{ goStudent }}" class="glass-switch-btn">Student Portal</button>
           </div>
         </div>
       </div>
@@ -496,11 +958,11 @@
             <span style="font:500 11.5px/1 var(--font-sans); color:var(--text-faint); text-align:center;">Sat</span>
             <sc-for list="{{ days }}" as="d" hint-placeholder-count="35">
               <div onClick="{{ d.onClick }}" style="{{ d.adminStyle }}">
-                <div style="display:flex; align-items:baseline; justify-content:space-between; width:100%;">
-                  <span style="font:500 14px/1 var(--font-mono);">{{ d.num }}</span>
+                <div style="display:flex; flex-direction:column; width:100%; gap:2px;">
+                  <span style="font:500 13px/1 var(--font-mono); color:var(--text-heading);">{{ d.num }}</span>
                   <span style="{{ d.loadStyle }}">{{ d.load }}</span>
                 </div>
-                <div style="display:flex; flex-direction:column; gap:3px; width:100%; margin-top:6px;">
+                <div style="display:flex; flex-direction:column; gap:2px; width:100%; margin-top:4px;">
                   <sc-for list="{{ d.people }}" as="p" hint-placeholder-count="2">
                     <span style="{{ p.style }}">{{ p.label }}</span>
                   </sc-for>
@@ -944,13 +1406,13 @@ class Component extends DCLogic {
 
   adminCellStyle(kind, active) {
     const base = {
-      minHeight: 118, borderRadius: 6, padding: '7px 8px', display: 'flex',
-      flexDirection: 'column', alignItems: 'flex-start',
+      minHeight: this.narrow ? 75 : 118, borderRadius: 6, padding: this.narrow ? '5px 4px' : '7px 8px', display: 'flex',
+      flexDirection: 'column', alignItems: 'flex-start', overflow: 'hidden',
       border: '1px solid var(--border-default)', background: 'var(--surface-card)',
       color: 'var(--text-heading)', cursor: 'pointer', textAlign: 'left',
       transition: 'background 140ms var(--ease-standard)'
     };
-    if (kind === 'blank') return { minHeight: 118, visibility: 'hidden' };
+    if (kind === 'blank') return { minHeight: this.narrow ? 75 : 118, visibility: 'hidden' };
     if (kind === 'past') Object.assign(base, { background: 'var(--slate-050)', color: 'var(--text-faint)', cursor: 'default', borderColor: 'var(--slate-100)' });
     else if (kind === 'noFly') Object.assign(base, { background: 'var(--slate-100)', color: 'var(--text-muted)', borderColor: 'var(--slate-200)' });
     else if (kind === 'full') Object.assign(base, { background: 'var(--status-danger-bg)', borderColor: 'var(--status-danger-bg)', color: 'var(--status-danger-fg)' });
