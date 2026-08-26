@@ -124,3 +124,8 @@ export async function nextBookingSeq() {
     returning value`;
   return rows[0].value;
 }
+
+export async function deleteBooking(id) {
+  await init();
+  await sql`delete from bookings where id = ${id}`;
+}

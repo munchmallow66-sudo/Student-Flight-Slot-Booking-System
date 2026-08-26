@@ -985,13 +985,14 @@
               <span style="font:400 12.5px/1 var(--font-sans); color:var(--text-muted); white-space:nowrap;">Awaiting time assignment</span>
             </div>
             <div style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
-              <div style="min-width:520px;">
+              <div style="min-width:620px;">
             <div style="display:flex; gap:14px; padding:10px 20px; background:var(--slate-050); border-bottom:1px solid var(--border-default);">
               <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.04em; text-transform:uppercase; color:var(--text-faint); width:100px; flex-shrink:0;">ID</span>
               <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.04em; text-transform:uppercase; color:var(--text-faint); flex:1; min-width:104px;">Student</span>
               <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.04em; text-transform:uppercase; color:var(--text-faint); width:58px; flex-shrink:0;">Batch</span>
               <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.04em; text-transform:uppercase; color:var(--text-faint); width:118px; flex-shrink:0;">Flight days</span>
               <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.04em; text-transform:uppercase; color:var(--text-faint); width:40px; flex-shrink:0; text-align:right;">Flts</span>
+              <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.04em; text-transform:uppercase; color:var(--text-faint); width:92px; flex-shrink:0; text-align:right;">Action</span>
             </div>
             <sc-for list="{{ bookingRows }}" as="b" hint-placeholder-count="6">
               <div style="display:flex; gap:14px; align-items:center; padding:11px 20px; border-bottom:1px solid var(--slate-100);">
@@ -1003,6 +1004,9 @@
                 <span style="font:500 12px/1.3 var(--font-mono); color:var(--text-muted); width:58px; flex-shrink:0;">{{ b.batch }}</span>
                 <span style="font:400 12px/1.3 var(--font-sans); color:var(--text-body); width:118px; flex-shrink:0;">{{ b.range }}</span>
                 <span style="font:500 12px/1.3 var(--font-mono); color:var(--text-body); width:40px; flex-shrink:0; text-align:right;">{{ b.count }}</span>
+                <span style="width:92px; flex-shrink:0; display:flex; justify-content:flex-end;">
+                  <button onClick="{{ b.onCancel }}" style="font:500 11.5px/1 var(--font-sans); padding:6px 10px; border-radius:5px; border:1px solid var(--red-600); background:var(--red-600); color:#fff; cursor:pointer; white-space:nowrap;">Cancel</button>
+                </span>
               </div>
             </sc-for>
               </div>
@@ -1038,6 +1042,24 @@
       </div>
     </sc-if>
   </main>
+
+  <sc-if value="{{ showAdminCancelDialog }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; background:rgba(12,18,48,.5); display:flex; align-items:center; justify-content:center; padding:24px; z-index:45;">
+      <div style="width:100%; max-width:440px; background:var(--surface-card); border-radius:10px; box-shadow:0 18px 48px rgba(12,18,48,.28); padding:24px; display:flex; flex-direction:column; gap:16px;">
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <h2 style="margin:0; font:600 17px/1.4 var(--font-sans); color:var(--text-heading);">Cancel booking</h2>
+          <span style="font:400 13px/1.6 var(--font-sans); color:var(--text-muted);">{{ adminCancelLabel }}</span>
+        </div>
+        <div style="background:var(--status-danger-bg); color:var(--status-danger-fg); border-radius:6px; padding:10px 12px; font:400 12.5px/1.5 var(--font-sans);">
+          This booking and all its flight days will be removed and the released slots can be re-booked immediately. This cannot be undone.
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid var(--border-default); padding-top:16px;">
+          <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" variant="ghost" on-click="{{ closeAdminCancel }}" hint-size="auto,40px">Keep booking</x-import>
+          <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" variant="danger" on-click="{{ confirmAdminCancel }}" hint-size="auto,40px">Cancel booking</x-import>
+        </div>
+      </div>
+    </div>
+  </sc-if>
 
   <sc-if value="{{ showSettingsModal }}" hint-placeholder-val="{{ false }}">
     <div style="position:fixed; inset:0; background:rgba(10,17,40,.65); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:24px; z-index:50;">
@@ -1173,7 +1195,7 @@ class Component extends DCLogic {
   state = {
     role: 'student', view: 'login', accounts: {}, session: null,
     authEmail: '', authPw: '', authErr: '', suPw: '', suPw2: '',
-    adminAuthed: false, adminPw: '', cancelOpen: false, settingsOpen: false,
+    adminAuthed: false, adminPw: '', cancelOpen: false, settingsOpen: false, adminCancelOpen: false, adminCancelTarget: null,
     settingsFirst: undefined, settingsLast: undefined, settingsBatch: undefined, settingsPhone: undefined,
     dbStatus: 'loading', dbError: '',
     vw: typeof window !== 'undefined' ? window.innerWidth : 1200,
@@ -1339,6 +1361,21 @@ class Component extends DCLogic {
     this.setState({ dayState: next });
     const self = this;
     if (this.db) this.db.setDayStatus(is, flag || null).catch(function (e) { self.dbFail(e); });
+  }
+
+  adminCancelBooking(b) {
+    if (!b) return;
+    this.setState({ adminCancelTarget: b, adminCancelOpen: true });
+  }
+
+  doAdminCancel() {
+    const t = this.state.adminCancelTarget;
+    if (!t) return;
+    const id = t.id;
+    const next = this.state.bookings.filter(function (x) { return x.id !== id; });
+    this.setState({ bookings: next, adminCancelOpen: false, adminCancelTarget: null });
+    const self = this;
+    if (this.db) this.db.deleteBooking(id).catch(function (e) { self.dbFail(e); });
   }
 
   cycleFlag(is) {
@@ -1846,12 +1883,21 @@ class Component extends DCLogic {
       markNoFly: function () { self.setFlag(dd, 'noFly'); },
       markFull: function () { self.setFlag(dd, 'full'); },
       clearFlag: function () { self.setFlag(dd, null); },
+      showAdminCancelDialog: !!s.adminCancelOpen,
+      adminCancelLabel: s.adminCancelTarget
+        ? "Booking " + s.adminCancelTarget.id + " - " + s.adminCancelTarget.name
+          + (s.adminCancelTarget.batch ? " (batch " + s.adminCancelTarget.batch + ")" : "")
+          + " - " + s.adminCancelTarget.days.length + " flight day" + (s.adminCancelTarget.days.length === 1 ? "" : "s")
+        : "",
+      closeAdminCancel: function () { self.setState({ adminCancelOpen: false, adminCancelTarget: null }); },
+      confirmAdminCancel: function () { self.doAdminCancel(); },
       bookingRows: s.bookings.slice().reverse().slice(0, 8).map(function (b) {
         return {
           id: b.id, name: b.name, batch: b.batch, count: b.days.length,
           email: b.email || '—',
           range: compactRange(b.days[0], b.days[b.days.length - 1])
-            + (spanDays(b.days[0], b.days[b.days.length - 1]).length === b.days.length ? '' : ' (split)')
+            + (spanDays(b.days[0], b.days[b.days.length - 1]).length === b.days.length ? '' : ' (split)'),
+          onCancel: function () { self.adminCancelBooking(b); },
         };
       })
     };
