@@ -644,7 +644,10 @@
           </div>
 
           <div class="glass-input-group">
-            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Staff Passcode" placeholder="Enter staff passcode" type="password" helper="{{ passcodeHint }}" value="{{ adminPw }}" on-change="{{ setAdminPw }}" hint-size="100%,66px"></x-import>
+            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Staff Email" placeholder="staff@example.com" type="email" value="{{ adminEmail }}" on-change="{{ setAdminEmail }}" hint-size="100%,66px"></x-import>
+          </div>
+          <div class="glass-input-group">
+            <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Staff Password" placeholder="Staff password" type="password" helper="Use the staff account issued by the training office." value="{{ adminPw }}" on-change="{{ setAdminPw }}" hint-size="100%,66px"></x-import>
           </div>
 
           <sc-if value="{{ hasAuthError }}" hint-placeholder-val="{{ false }}">
@@ -1112,7 +1115,7 @@
 </div>
 
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;slotsPerDay&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:5,&quot;min&quot;:1,&quot;max&quot;:10,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Booking rules&quot;},&quot;adminPasscode&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;avicore2026&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Booking rules&quot;},&quot;signupOpenDate&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;2026-08-03&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Session window&quot;},&quot;bookingOpenDate&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;2026-08-05&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Session window&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;slotsPerDay&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:5,&quot;min&quot;:1,&quot;max&quot;:10,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Booking rules&quot;},&quot;signupOpenDate&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;2026-08-03&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Session window&quot;},&quot;bookingOpenDate&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;2026-08-05&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Session window&quot;}}">
 const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const MON_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -1166,7 +1169,7 @@ const SEED_DAY_STATE = {};
 
 class Component extends DCLogic {
   state = {
-    role: 'student', view: 'login', accounts: {}, session: null,
+    role: 'student', view: 'login', accounts: {}, session: null, token: null, adminEmail: '', token: null, adminEmail: '',
     authEmail: '', authPw: '', authErr: '', suPw: '', suPw2: '',
     adminAuthed: false, adminPw: '', cancelOpen: false, settingsOpen: false, adminCancelOpen: false, adminCancelTarget: null,
     settingsFirst: undefined, settingsLast: undefined, settingsBatch: undefined, settingsPhone: undefined,
@@ -1182,7 +1185,10 @@ class Component extends DCLogic {
     const self = this;
     import('./db.js').then(function (db) {
       self.db = db;
-      return self.refresh();
+      return db.init().then(function (ok) {
+        if (ok) return self.refresh();
+        self.setState({ dbStatus: 'ok' });
+      });
     }).catch(function (e) {
       self.setState({ dbStatus: 'error', dbError: String(e.message || e) });
     });
@@ -1199,9 +1205,10 @@ class Component extends DCLogic {
 
   refresh(quiet) {
     const self = this;
+    if (!this.state.session && !this.state.adminAuthed) return Promise.resolve();
     if (!quiet) this.setState({ dbStatus: 'loading' });
     return this.db.loadAll().then(function (d) {
-      self.setState({ accounts: d.accounts, bookings: d.bookings, dayState: d.dayState, settings: d.settings || {}, dbStatus: 'ok', dbError: '' });
+      self.setState({ accounts: d.accounts || {}, bookings: d.bookings || [], dayState: d.dayState || {}, settings: d.settings || {}, dbStatus: 'ok', dbError: '' });
     }).catch(function (e) {
       self.setState({ dbStatus: 'error', dbError: String(e.message || e) });
     });
@@ -1211,48 +1218,71 @@ class Component extends DCLogic {
     this.setState({ dbStatus: 'error', dbError: String((e && e.message) || e) });
   }
 
-  persistAccounts(accounts, email) {
+  saveProfile(fields) {
     const self = this;
-    if (!this.db || !email) return;
-    this.db.saveAccount(email, accounts[email]).catch(function (e) { self.dbFail(e); });
+    if (!this.db || !fields) return;
+    this.db.saveAccount('', fields).then(function () {
+      self.setState({ dbStatus: 'ok' });
+    }).catch(function (e) { self.dbFail(e); });
   }
 
   doSignup() {
     const s = this.state;
     const email = (s.email || '').trim().toLowerCase();
     if (this.signupWait > 0) { this.setState({ authErr: 'Registration opens ' + fmtIso(this.signupOpen) + '. Accounts cannot be created yet.' }); return; }
-    if (s.accounts[email]) { this.setState({ authErr: 'An account already exists for this email. Sign in instead.' }); return; }
     if ((s.suPw || '').length < 8) { this.setState({ authErr: 'Password must be at least 8 characters.' }); return; }
     if (s.suPw !== s.suPw2) { this.setState({ authErr: 'Passwords do not match.' }); return; }
-    const accounts = Object.assign({}, s.accounts);
-    accounts[email] = { password: s.suPw, first: s.first.trim(), last: s.last.trim(), batch: s.batch.trim(), phone: s.phone.trim() };
-    this.persistAccounts(accounts, email);
-    this.setState({ accounts: accounts, session: email, email: email, view: 'app', step: 2, authErr: '', suPw: '', suPw2: '' });
+    const self = this;
+    this.db.register({
+      email: email, password: s.suPw,
+      first: s.first.trim(), last: s.last.trim(), batch: s.batch.trim(), phone: (s.phone || '').trim()
+    }).then(function (d) {
+      self.setState({ session: d.email, email: email, view: 'app', step: 2, authErr: '', suPw: '', suPw2: '' });
+      self.refresh(true);
+    }).catch(function (e) { self.setState({ authErr: e.message || 'Registration failed.' }); });
   }
 
   doLogin() {
     const s = this.state;
     const email = (s.authEmail || '').trim().toLowerCase();
-    const acc = s.accounts[email];
-    if (!acc || acc.password !== s.authPw) { this.setState({ authErr: 'Email or password is incorrect.' }); return; }
-    const mine = s.bookings.filter(function (b) { return (b.email || '').toLowerCase() === email; });
-    const last = mine.length ? mine[mine.length - 1] : null;
-    this.setState({
-      session: email, view: 'app', authErr: '', authPw: '',
-      first: acc.first, last: acc.last, batch: acc.batch, phone: acc.phone, email: email,
-      step: 2,
-      code: last ? last.id : null,
-      confirmedDays: last ? last.days : null,
-      sel: last ? last.days.slice() : [],
-      mi: last ? Math.max(0, MONTHS.findIndex(function (m) { return isoOf(m[0], m[1], 1).slice(0, 7) === last.days[0].slice(0, 7); })) : 0
-    });
+    if (!email || !s.authPw) { this.setState({ authErr: 'Enter your email and password.' }); return; }
+    const self = this;
+    this.db.login(email, s.authPw).then(function (d) {
+      self.setState({
+        session: d.email, view: 'app', authErr: '', authPw: '',
+        first: d.first || '', last: d.last || '', batch: d.batch || '', phone: d.phone || '', email: d.email,
+        adminAuthed: !!d.isAdmin, step: 2, code: null, confirmedDays: null, sel: [], mi: 0
+      });
+      return self.refresh(true);
+    }).then(function () {
+      const mine = self.state.bookings.filter(function (b) { return (b.email || '').toLowerCase() === email; });
+      const last = mine.length ? mine[mine.length - 1] : null;
+      if (last) self.setState({
+        code: last.id, confirmedDays: last.days, sel: last.days.slice(),
+        mi: Math.max(0, MONTHS.findIndex(function (m) { return isoOf(m[0], m[1], 1).slice(0, 7) === last.days[0].slice(0, 7); }))
+      });
+    }).catch(function (e) { self.setState({ authErr: e.message || 'Email or password is incorrect.' }); });
   }
 
   signOut() {
+    const self = this;
+    if (this.db) this.db.logout();
     this.setState({
-      session: null, view: 'login', role: 'student', adminAuthed: false, adminPw: '',
+      session: null, token: null, view: 'login', role: 'student', adminAuthed: false, adminPw: '', adminEmail: '',
       step: 1, sel: [], code: null, error: '', authEmail: '', authPw: '', authErr: ''
     });
+  }
+
+  adminLogin() {
+    const s = this.state;
+    const email = (s.adminEmail || '').trim().toLowerCase();
+    if (!email || !s.adminPw) { this.setState({ authErr: 'Enter the staff email and password.' }); return; }
+    const self = this;
+    this.db.login(email, s.adminPw).then(function (d) {
+      if (!d.isAdmin) { self.setState({ authErr: 'This account has no staff access.' }); return; }
+      self.setState({ session: d.email, view: 'app', adminAuthed: true, adminPw: '', authErr: '', role: 'admin' });
+      self.refresh(true);
+    }).catch(function (e) { self.setState({ authErr: e.message || 'Staff login failed.' }); });
   }
 
   get slots() { return this.props.slotsPerDay || 5; }
@@ -1290,8 +1320,6 @@ class Component extends DCLogic {
       bookings: list, bookMode: 'replace', step: 2,
       sel: [], code: null, confirmedDays: null, error: ''
     });
-    const self = this;
-    if (this.db) this.db.deleteBookingsForEmail(email).catch(function (e) { self.dbFail(e); });
   }
 
   startAdd() {
@@ -1377,10 +1405,11 @@ class Component extends DCLogic {
     const newDays = this.flightDays();
     if (!newDays.length) return;
     const email = (s.email || '').trim();
-    const mine = this.myBookings();
     const merged = this.myDays().concat(newDays).filter(function (d, i, a) { return a.indexOf(d) === i; }).sort();
     const self = this;
-    const commit = function (code) {
+    this.setState({ dbStatus: 'saving' });
+    this.db.saveBooking({ days: merged }).then(function (res) {
+      const code = res && res.id ? res.id : null;
       const others = self.state.bookings.filter(function (b) { return (b.email || '').toLowerCase() !== email.toLowerCase(); });
       const rec = {
         id: code, name: (self.state.first + ' ' + self.state.last).trim(), batch: self.state.batch,
@@ -1388,21 +1417,12 @@ class Component extends DCLogic {
       };
       self.setState({
         bookings: others.concat([rec]), step: 4, code: code, confirmedDays: merged, bookMode: null,
-        sel: merged.slice()
+        sel: merged.slice(), dbStatus: 'ok'
       });
-      if (self.db) {
-        self.db.saveBooking(rec)
-          .then(function () { return self.db.deleteBookingsForEmail(email, code); })
-          .catch(function (e) { self.dbFail(e); });
-      }
-    };
-    if (mine.length) { commit(mine[0].id); return; }
-    if (!this.db) { commit('BK-2026-' + pad4(1)); return; }
-    this.setState({ dbStatus: 'saving' });
-    this.db.nextBookingSeq().then(function (n) {
-      self.setState({ dbStatus: 'ok' });
-      commit('BK-2026-' + pad4(n));
-    }).catch(function (e) { self.dbFail(e); });
+      self.refresh(true);
+    }).catch(function (e) {
+      self.setState({ dbStatus: 'error', dbError: String(e.message || e), error: e.message || 'Could not save booking.' });
+    });
   }
 
   cellStyle(kind, sel) {
@@ -1484,7 +1504,7 @@ class Component extends DCLogic {
     const isAdmin = adminRole && s.adminAuthed;
     const studentApp = !adminRole && !!s.session;
     const mineDays = s.session ? this.myDays() : [];
-    const passcode = this.props.adminPasscode || 'avicore2026';
+
     const roster = s.adminMode === 'roster';
     const m = MONTHS[s.mi];
     const y = m[0], mo = m[1];
@@ -1703,21 +1723,20 @@ class Component extends DCLogic {
       dbError: 'Database error: ' + (s.dbError || 'unknown') + ' — changes are not being saved.',
       authEmail: s.authEmail, authPw: s.authPw, suPw: s.suPw, suPw2: s.suPw2, adminPw: s.adminPw,
       hasAuthError: !!s.authErr, authError: s.authErr,
-      passcodeHint: 'Issued by the training office.',
+
       setAuthEmail: function (e) { self.setState({ authEmail: e.target.value }); },
       setAuthPw: function (e) { self.setState({ authPw: e.target.value }); },
       setSuPw: function (e) { self.setState({ suPw: e.target.value }); },
       setSuPw2: function (e) { self.setState({ suPw2: e.target.value }); },
       setAdminPw: function (e) { self.setState({ adminPw: e.target.value }); },
+      setAdminEmail: function (e) { self.setState({ adminEmail: e.target.value }); },
+      setAdminEmail: function (e) { self.setState({ adminEmail: e.target.value }); },
       goLogin: function () { self.setState({ view: 'login', authErr: '' }); },
       goSignup: function () { self.setState({ view: 'signup', authErr: '' }); },
       doLogin: function () { self.doLogin(); },
       doSignup: function () { self.doSignup(); },
       signOut: function () { self.signOut(); },
-      doAdminLogin: function () {
-        if (s.adminPw === passcode) self.setState({ adminAuthed: true, adminPw: '', authErr: '' });
-        else self.setState({ authErr: 'Incorrect staff passcode.' });
-      },
+      doAdminLogin: function () { self.adminLogin(); },
       signupInvalid: !nameOk || !s.suPw || !s.suPw2,
       isStep1: studentApp && s.step === 1,
       isStep2: studentApp && s.step === 2 && this.bookingWait === 0,
@@ -1813,18 +1832,13 @@ class Component extends DCLogic {
       setSettingsBatch: function (e) { self.setState({ settingsBatch: e.target.value }); },
       setSettingsPhone: function (e) { self.setState({ settingsPhone: e.target.value }); },
       saveSettings: function () {
-        const email = (s.session || s.email || '').trim().toLowerCase();
         const f = (s.settingsFirst !== undefined ? s.settingsFirst : s.first || '').trim();
         const l = (s.settingsLast !== undefined ? s.settingsLast : s.last || '').trim();
         const b = (s.settingsBatch !== undefined ? s.settingsBatch : s.batch || '').trim();
         const p = (s.settingsPhone !== undefined ? s.settingsPhone : s.phone || '').trim();
-        const accounts = Object.assign({}, s.accounts);
-        if (accounts[email]) {
-          accounts[email] = Object.assign({}, accounts[email], { first: f, last: l, batch: b, phone: p });
-          self.persistAccounts(accounts, email);
-        }
+        self.saveProfile({ first: f, last: l, batch: b, phone: p });
         self.setState({
-          first: f, last: l, batch: b, phone: p, accounts: accounts, settingsOpen: false
+          first: f, last: l, batch: b, phone: p, settingsOpen: false
         });
       },
       profileInitials: (((s.first || 'S')[0] || 'S') + ((s.last || 'U')[0] || 'U')).toUpperCase(),

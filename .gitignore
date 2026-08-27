@@ -1,0 +1,4 @@
+node_modules/
+api/secrets.env
+serve-out.log
+serve-err.log
