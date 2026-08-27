@@ -27,6 +27,8 @@ async function migrate() {
   await pool.query("create table if not exists day_status (day date primary key, status text not null)");
   await pool.query("create table if not exists settings (key text primary key, value text)");
   await pool.query("create table if not exists counters (name text primary key, value integer not null default 0)");
+  await pool.query("create table if not exists audit_log (id bigserial primary key, ts timestamptz not null default now(), email text not null, action text not null, booking_id text, detail text)");
+  await pool.query("create index if not exists audit_log_ts_idx on audit_log (ts desc)");
   await pool.query("insert into counters (name, value) values ($1, 1) on conflict do nothing", ["booking"]);
 }
 

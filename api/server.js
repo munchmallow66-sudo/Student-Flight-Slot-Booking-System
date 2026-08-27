@@ -74,7 +74,7 @@ function isIso(d) { return typeof d === "string" && d.length === 10 && d[4] === 
 
 async function loadState() {
   const studs = await pool.query("select email, first, last, batch, phone from students order by email");
-  const books = await pool.query("select id, email, name, batch, phone from bookings order by created_at");
+  const books = await pool.query("select id, email, name, batch, phone, created_at::text as created_at from bookings order by created_at");
   const bdays = await pool.query("select booking_id, day::text as day from booking_days order by day");
   const stats = await pool.query("select day::text as day, status from day_status");
   const sets = await pool.query("select key, value from settings");
@@ -82,12 +82,16 @@ async function loadState() {
   studs.rows.forEach(function (r) { accounts[r.email] = { first: r.first || "", last: r.last || "", batch: r.batch || "", phone: r.phone || "" }; });
   const dayMap = {};
   bdays.rows.forEach(function (r) { (dayMap[r.booking_id] = dayMap[r.booking_id] || []).push(r.day.slice(0, 10)); });
-  const bookings = books.rows.map(function (b) { return { id: b.id, email: b.email, name: b.name || "", batch: b.batch || "", phone: b.phone || "", days: (dayMap[b.id] || []).sort() }; });
+  const bookings = books.rows.map(function (b) { return { id: b.id, email: b.email, name: b.name || "", batch: b.batch || "", phone: b.phone || "", created: b.created_at ? b.created_at.slice(0, 10) : "", days: (dayMap[b.id] || []).sort() }; });
   const dayState = {};
   stats.rows.forEach(function (r) { dayState[r.day.slice(0, 10)] = r.status; });
   const settings = {};
   sets.rows.forEach(function (r) { settings[r.key] = r.value; });
   return { bookings: bookings, dayState: dayState, settings: settings, accounts: accounts };
+}
+
+async function logAudit(c, email, action, bookingId, detail) {
+  await c.query("insert into audit_log (email, action, booking_id, detail) values ($1,$2,$3,$4)", [email, action, bookingId || null, detail === undefined ? null : JSON.stringify(detail)]);
 }
 
 async function api(req, res, u) {
@@ -110,6 +114,7 @@ async function api(req, res, u) {
     const ex = await pool.query("select 1 from students where lower(email) = lower($1)", [email]);
     if (ex.rows.length) { send(res, 409, { message: "An account already exists for this email. Sign in instead." }); return; }
     await pool.query("insert into students (email, password, first, last, batch, phone) values ($1,$2,$3,$4,$5,$6)", [email, hashPw(pw), (b.first || "").trim(), (b.last || "").trim(), (b.batch || "").trim(), (b.phone || "").trim()]);
+    await logAudit(pool, email, "student.register", null, { first: (b.first || "").trim(), last: (b.last || "").trim(), batch: (b.batch || "").trim(), phone: (b.phone || "").trim() });
     const token = await createSession(email);
     send(res, 200, { token: token, email: email, first: (b.first || "").trim(), last: (b.last || "").trim(), batch: (b.batch || "").trim(), phone: (b.phone || "").trim(), isAdmin: false });
     return;
@@ -174,6 +179,7 @@ async function api(req, res, u) {
     const st = b.status || null;
     if (st) await pool.query("insert into day_status (day, status) values ($1,$2) on conflict (day) do update set status = excluded.status", [day, st]);
     else await pool.query("delete from day_status where day = $1", [day]);
+    await logAudit(pool, auth.email, "slot.day_status", null, { day: day, status: (b.status || null) });
     send(res, 200, { ok: true }); return;
   }
 
@@ -183,6 +189,7 @@ async function api(req, res, u) {
     if (!b.key) { send(res, 400, { message: "Missing setting key." }); return; }
     if (b.value) await pool.query("insert into settings (key, value) values ($1,$2) on conflict (key) do update set value = excluded.value", [b.key, b.value]);
     else await pool.query("delete from settings where key = $1", [b.key]);
+    await logAudit(pool, auth.email, "settings.update", null, { key: b.key, value: (b.value || null) });
     send(res, 200, { ok: true }); return;
   }
 
@@ -201,6 +208,8 @@ async function api(req, res, u) {
     const client = await pool.connect();
     try {
       await client.query("begin");
+      const oldRows = await client.query("select bd.booking_id as bid, bd.day::text as day from booking_days bd left join bookings b on b.id = bd.booking_id where lower(b.email) = lower($1)", [auth.email]);
+      const hadOld = oldRows.rows.length > 0;
       await client.query("delete from booking_days where booking_id in (select id from bookings where lower(email) = lower($1))", [auth.email]);
       await client.query("delete from bookings where lower(email) = lower($1)", [auth.email]);
       const cap = await client.query("select day::text as day, count(*)::int as n from booking_days where day = any($1::date[]) group by day", [days]);
@@ -218,6 +227,7 @@ async function api(req, res, u) {
       const name = ((prof.first || "") + " " + (prof.last || "")).trim();
       await client.query("insert into bookings (id, email, name, batch, phone) values ($1,$2,$3,$4,$5)", [id, auth.email, name, prof.batch || "", prof.phone || ""]);
       for (let i = 0; i < days.length; i++) await client.query("insert into booking_days (booking_id, day) values ($1,$2)", [id, days[i]]);
+      await logAudit(client, auth.email, hadOld ? "booking.replaced" : "booking.create", id, { days: days, oldDays: oldRows.rows.map(function (r) { return r.day; }).filter(Boolean).sort() });
       await client.query("commit");
       send(res, 200, { id: id, days: days });
     } catch (e) {
@@ -228,16 +238,61 @@ async function api(req, res, u) {
   }
 
   if (method === "DELETE" && pathA === "/api/bookings/all") {
-    await pool.query("delete from bookings where lower(email) = lower($1)", [auth.email]);
-    send(res, 200, { ok: true }); return;
+    const client = await pool.connect();
+    try {
+      await client.query("begin");
+      const oldRows = await client.query("select b.id as bid, bd.day::text as day from bookings b left join booking_days bd on bd.booking_id = b.id where lower(b.email) = lower($1) order by b.id", [auth.email]);
+      const ids = [];
+      const days = [];
+      oldRows.rows.forEach(function (r) { if (ids.indexOf(r.bid) === -1) ids.push(r.bid); if (r.day) days.push(r.day); });
+      await client.query("delete from bookings where lower(email) = lower($1)", [auth.email]);
+      await logAudit(client, auth.email, "booking.delete_all", null, { bookings: ids, days: days });
+      await client.query("commit");
+      send(res, 200, { ok: true }); return;
+    } catch (e) {
+      try { await client.query("rollback"); } catch (e2) { }
+      send(res, 500, { message: "Could not cancel the booking." }); return;
+    } finally {
+      client.release();
+    }
   }
 
   const dm = pathA.split("/");
   if (method === "DELETE" && dm.length === 4 && dm[1] === "api" && dm[2] === "bookings" && dm[3]) {
     const bid = decodeURIComponent(dm[3]);
-    const del = await pool.query("delete from bookings where id = $1 and (lower(email) = lower($2) or $3)", [bid, auth.email, auth.isAdmin]);
-    if (!del.rowCount) { send(res, 404, { message: "Booking not found." }); return; }
-    send(res, 200, { ok: true }); return;
+    const client = await pool.connect();
+    try {
+      await client.query("begin");
+      const found = await client.query("select id, email, name, batch from bookings where id = $1", [bid]);
+      if (!found.rows.length) { await client.query("rollback"); send(res, 404, { message: "Booking not found." }); return; }
+      const b = found.rows[0];
+      if (String(b.email).toLowerCase() !== String(auth.email).toLowerCase() && !auth.isAdmin) { await client.query("rollback"); send(res, 404, { message: "Booking not found." }); return; }
+      const dd = await client.query("select day::text as day from booking_days where booking_id = $1 order by day", [bid]);
+      await client.query("delete from bookings where id = $1", [bid]);
+      await logAudit(client, auth.email, "booking.delete", bid, { byAdmin: auth.isAdmin && String(b.email).toLowerCase() !== String(auth.email).toLowerCase(), email: b.email || "", name: b.name || "", batch: b.batch || "", days: dd.rows.map(function (r) { return r.day; }) });
+      await client.query("commit");
+      send(res, 200, { ok: true }); return;
+    } catch (e) {
+      try { await client.query("rollback"); } catch (e2) { }
+      send(res, 500, { message: "Could not remove the booking." }); return;
+    } finally {
+      client.release();
+    }
+  }
+
+  if (method === "GET" && pathA === "/api/audit") {
+    if (!auth.isAdmin) { send(res, 403, { message: "Staff access required." }); return; }
+    const limit = Math.max(1, Math.min(500, Number(u.searchParams.get("limit") || 200) || 200));
+    const emailF = (u.searchParams.get("email") || "").trim().toLowerCase();
+    const actionF = (u.searchParams.get("action") || "").trim();
+    const where = [];
+    const params = [];
+    if (emailF) { params.push(emailF); where.push("lower(email) = $" + params.length); }
+    if (actionF) { params.push(actionF); where.push("action = $" + params.length); }
+    params.push(limit);
+    const qr = await pool.query("select id, (extract(epoch from ts) * 1000)::bigint as ms, email, action, booking_id, detail from audit_log" + (where.length ? " where " + where.join(" and ") : "") + " order by ts desc limit $" + params.length, params);
+    send(res, 200, { audit: qr.rows });
+    return;
   }
 
   send(res, 404, { message: "Unknown endpoint." });

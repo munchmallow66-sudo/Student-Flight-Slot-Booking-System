@@ -17,8 +17,9 @@ Flight slot booking tool for Thai Inter Flying pilot students (BE76 multi-engine
 - Multi-day selection across months; contiguous days grouped into trips with travel-in / travel-out days added automatically
 - 5 slots per day, 1 flight per student per day; capacity and day rules enforced server-side in a transaction
 - Session window: registration opens 3 Aug 2026, day selection opens 5 Aug 2026 (editable in Settings)
-- Admin: per-day roster, load view, no-fly / slots-full toggles, bookings table, cancel bookings
-- Data in Neon Postgres (students, bookings, booking_days, day_status, settings, counters, sessions)
+- Admin: per-day roster, load view, no-fly / slots-full toggles, full bookings list (search by name/email/ID, filter by batch and flight-day range), cancel bookings
+- Append-only audit trail: registrations, booking created/replaced, cancellations and admin day-status/settings changes are recorded with who/when/details (Staff → **Audit log**)
+- Data in Neon Postgres (students, bookings, booking_days, day_status, settings, counters, sessions, audit_log)
 
 ## Run (requires Node.js)
 ```powershell

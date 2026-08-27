@@ -81,6 +81,17 @@ export function deleteBooking(id) {
   return req("DELETE", "/api/bookings/" + encodeURIComponent(id));
 }
 
+export function fetchAudit(params) {
+  const q = new URLSearchParams();
+  if (params) {
+    if (params.limit) q.set("limit", String(params.limit));
+    if (params.email) q.set("email", params.email);
+    if (params.action) q.set("action", params.action);
+  }
+  const s = q.toString();
+  return req("GET", "/api/audit" + (s ? "?" + s : ""));
+}
+
 export function nextBookingSeq() {
   return Promise.resolve(null);
 }
