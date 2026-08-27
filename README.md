@@ -36,7 +36,28 @@ node api/create-admin.js admin@tif.local YourStrongPassword
 ```
 Then sign in to the Staff Portal (Admin tab) with that email and password.
 
+## Deploy to Vercel
+The repo deploys as a **static site + one serverless API function**. No CORS work is needed — the browser calls `/api/*` on the same origin.
+
+1. Host the repo on GitHub (already done, commit `6656362`).
+2. In the Vercel dashboard: **Add New → Project**, import the repo (or run `npx vercel` in this folder).
+   - Framework preset: **Other** — leave Build Command and Output Directory empty.
+3. Set the database connection as a Vercel environment variable:
+   - **Settings → Environment Variables** → add `DATABASE_URL` (apply to Production, Preview **and** Development).
+   - The value is in local `api/secrets.env` (gitignored — never uploaded) or the Neon Console.
+   - Tip for Neon: prefer the **Pooled connection string** (`-pooler.neon.tech` host or `?pgbouncer=true`) so serverless instances share connections instead of each opening its own.
+4. Deploy. The first `/api/*` request auto-runs the (idempotent) table migrations, or verify right away via `https://<your-project>.vercel.app/api/health`.
+5. Create/reset the staff account against the same Neon DB (run locally), then sign in from the website:
+   ```powershell
+   node api/create-admin.js admin@tif.local YourStrongPassword
+   ```
+
+What changed for Vercel:
+- `vercel.json` rewrites `/api/:path*` → `api/index.js` (the serverless function); the Vercel CDN serves all static assets (`index.html`, `BE76 Flight Slot Booking.dc.html`, `db.js`, `support.js`, `_ds/`, `uploads/`).
+- `api/server.js` now exports the same request handler it runs locally — `node api/server.js` is unchanged. On Vercel each instance runs migrations on its first request.
+- `api/index.js` is the Vercel entry point; the root `package.json` lets Vercel install `pg`.
+
 ## Security notes
 - Passwords hashed with scrypt (N=16384) server-side; legacy plaintext passwords are re-hashed on first login.
-- The Neon connection string is only read by the server (`api/secrets.env` or `DATABASE_URL` env var).
-- **Before production**: rotate the current Neon password (it was previously embedded in this repo and pushed to GitHub), add a server-side rate limiter, and deploy behind HTTPS.
+- The Neon connection string is only read by the server (`api/secrets.env` or `DATABASE_URL` env var); `secrets.env` is gitignored and never uploaded.
+- **Before production**: rotate the current Neon password (it was previously embedded in this repo and pushed to GitHub) and update `api/secrets.env`, add a server-side rate limiter, and keep HTTPS on (Vercel provides it automatically).

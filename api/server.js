@@ -2,7 +2,7 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
-const { pool, migrate, hashPw, verifyPw, tokenHash, createSession, authFrom } = require("./helpers");
+const { pool, migrate, hashPw, verifyPw, tokenHash, createSession, authFrom, DATABASE_URL } = require("./helpers");
 
 const ROOT = path.resolve(__dirname, "..");
 const PORT = Number(process.env.PORT || 8000);
@@ -243,20 +243,53 @@ async function api(req, res, u) {
   send(res, 404, { message: "Unknown endpoint." });
 }
 
-const server = http.createServer(async function (req, res) {
+const VERCEL = !!(process.env.VERCEL || (process.env.AWS_LAMBDA_FUNCTION_NAME && process.env.AWS_LAMBDA_RUNTIME_API));
+
+// Migrations run once per process and are idempotent, so the first /api request
+// on a fresh Vercel instance brings the schema up to date automatically.
+let migrationPromise = null;
+function ensureMigrated() {
+  if (!migrationPromise) {
+    migrationPromise = migrate().catch(function (e) { migrationPromise = null; throw e; });
+  }
+  return migrationPromise;
+}
+
+// Shared request handler.
+// - Vercel: vercel.json routes every /api/* request here; the CDN serves static files.
+// - Local (node api/server.js): the same handler also serves static files from ROOT.
+async function handle(req, res) {
   let u;
   try { u = new URL(req.url, "http://localhost"); } catch (e) { send(res, 400, { message: "Bad request" }); return; }
+  if (u.pathname === "/api") u.pathname = "/api/";
   try {
-    if (u.pathname.indexOf("/api/") === 0) await api(req, res, u);
-    else serveStatic(req, res, u.pathname);
+    if (u.pathname.indexOf("/api/") === 0) {
+      if (!DATABASE_URL) {
+        send(res, 500, { message: "Server misconfigured: DATABASE_URL is not set. Add it as a Vercel environment variable (see README)." });
+        return;
+      }
+      await ensureMigrated();
+      await api(req, res, u);
+    } else if (VERCEL) {
+      res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+      res.end("Not found");
+    } else {
+      serveStatic(req, res, u.pathname);
+    }
   } catch (e) {
     console.error(e);
     try { send(res, 500, { message: "Server error." }); } catch (e2) { }
   }
-});
+}
 
-migrate().then(function () {
-  server.listen(PORT, function () {
-    console.log("BE76 booking server ready at http://localhost:" + PORT + "/  (API at /api)");
-  });
-}).catch(function (e) { console.error("Startup failed:", e); process.exit(1); });
+module.exports = handle;
+module.exports.config = { maxDuration: 30 };
+
+// Local development server: `node api/server.js`
+if (require.main === module) {
+  ensureMigrated().then(function () {
+    http.createServer(handle).listen(PORT, function () {
+      console.log("BE76 booking server ready at http://localhost:" + PORT + "/  (API at /api)");
+    });
+  }).catch(function (e) { console.error("Startup failed:", e); process.exit(1); });
+}
