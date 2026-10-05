@@ -82,7 +82,15 @@ async function loadState() {
   studs.rows.forEach(function (r) { accounts[r.email] = { first: r.first || "", last: r.last || "", batch: r.batch || "", phone: r.phone || "" }; });
   const dayMap = {};
   bdays.rows.forEach(function (r) { (dayMap[r.booking_id] = dayMap[r.booking_id] || []).push(r.day.slice(0, 10)); });
-  const bookings = books.rows.map(function (b) { return { id: b.id, email: b.email, name: b.name || "", batch: b.batch || "", phone: b.phone || "", created: b.created_at ? b.created_at.slice(0, 10) : "", days: (dayMap[b.id] || []).sort() }; });
+  const bookings = books.rows.map(function (b) {
+    const cd = b.created_at ? new Date(b.created_at) : null;
+    return {
+      id: b.id, email: b.email, name: b.name || "", batch: b.batch || "", phone: b.phone || "",
+      created: b.created_at ? String(b.created_at).slice(0, 10) : "",
+      createdMs: cd && !isNaN(cd.getTime()) ? cd.getTime() : 0,
+      days: (dayMap[b.id] || []).sort()
+    };
+  });
   const dayState = {};
   stats.rows.forEach(function (r) { dayState[r.day.slice(0, 10)] = r.status; });
   const settings = {};
@@ -151,7 +159,12 @@ async function api(req, res, u) {
 
   if (method === "GET" && pathA === "/api/state") {
     const out = await loadState();
-    send(res, 200, { bookings: out.bookings, dayState: out.dayState, settings: out.settings, accounts: out.accounts, isAdmin: auth.isAdmin });
+    let recentAudit = [];
+    if (auth && auth.isAdmin) {
+      const qr = await pool.query("select id, (extract(epoch from ts) * 1000)::bigint as ms, email, action, booking_id, detail from audit_log order by ts desc limit 50");
+      recentAudit = qr.rows;
+    }
+    send(res, 200, { bookings: out.bookings, dayState: out.dayState, settings: out.settings, accounts: out.accounts, isAdmin: auth.isAdmin, recentAudit: recentAudit });
     return;
   }
   if (method === "PUT" && pathA === "/api/profile") {
@@ -227,7 +240,7 @@ async function api(req, res, u) {
       const name = ((prof.first || "") + " " + (prof.last || "")).trim();
       await client.query("insert into bookings (id, email, name, batch, phone) values ($1,$2,$3,$4,$5)", [id, auth.email, name, prof.batch || "", prof.phone || ""]);
       for (let i = 0; i < days.length; i++) await client.query("insert into booking_days (booking_id, day) values ($1,$2)", [id, days[i]]);
-      await logAudit(client, auth.email, hadOld ? "booking.replaced" : "booking.create", id, { days: days, oldDays: oldRows.rows.map(function (r) { return r.day; }).filter(Boolean).sort() });
+      await logAudit(client, auth.email, hadOld ? "booking.replaced" : "booking.create", id, { days: days, oldDays: oldRows.rows.map(function (r) { return r.day; }).filter(Boolean).sort(), name: name, batch: prof.batch || "", phone: prof.phone || "" });
       await client.query("commit");
       send(res, 200, { id: id, days: days });
     } catch (e) {
@@ -246,7 +259,10 @@ async function api(req, res, u) {
       const days = [];
       oldRows.rows.forEach(function (r) { if (ids.indexOf(r.bid) === -1) ids.push(r.bid); if (r.day) days.push(r.day); });
       await client.query("delete from bookings where lower(email) = lower($1)", [auth.email]);
-      await logAudit(client, auth.email, "booking.delete_all", null, { bookings: ids, days: days });
+      const prAll = await client.query("select first, last, batch from students where lower(email) = lower($1)", [auth.email]);
+      const prAllRow = prAll.rows[0] || {};
+      const prAllName = ((prAllRow.first || "") + " " + (prAllRow.last || "")).trim();
+      await logAudit(client, auth.email, "booking.delete_all", null, { bookings: ids, days: days, name: prAllName, batch: prAllRow.batch || "" });
       await client.query("commit");
       send(res, 200, { ok: true }); return;
     } catch (e) {

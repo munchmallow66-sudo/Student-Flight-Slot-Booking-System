@@ -25,6 +25,7 @@
      Glass Login UI — Dark Sky Background
      ═══════════════════════════════════════════ */
 
+  /* Full-viewport dark sky background for auth pages */
   .glass-auth-bg {
     position: fixed;
     inset: 0;
@@ -36,6 +37,7 @@
     pointer-events: none;
   }
 
+  /* Subtle stars effect */
   .glass-auth-bg::before {
     content: '';
     position: absolute;
@@ -56,6 +58,7 @@
     animation: twinkle 6s ease-in-out infinite alternate;
   }
 
+  /* Silhouette tree line */
   .glass-auth-bg::after {
     content: '';
     position: absolute;
@@ -64,6 +67,7 @@
     right: 0;
     height: 35%;
     background:
+      /* Tree silhouettes via polygon-like gradients */
       linear-gradient(175deg, transparent 42%, #0d1420 43%),
       linear-gradient(185deg, transparent 38%, #0d1420 39%),
       linear-gradient(170deg, transparent 46%, #0f1825 47%);
@@ -75,6 +79,7 @@
     100% { opacity: 1; }
   }
 
+  /* Auth page wrapper — centers glass card */
   .auth-page-wrapper {
     position: relative;
     z-index: 1;
@@ -86,6 +91,7 @@
     box-sizing: border-box;
   }
 
+  /* Glass card */
   .glass-card {
     position: relative;
     width: 100%;
@@ -108,10 +114,17 @@
   }
 
   @keyframes cardFadeIn {
-    from { opacity: 0; transform: translateY(24px) scale(0.97); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+    from {
+      opacity: 0;
+      transform: translateY(24px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
   }
 
+  /* Close button */
   .glass-close-btn {
     position: absolute;
     top: 16px;
@@ -137,6 +150,7 @@
     border-color: rgba(255, 255, 255, 0.35);
   }
 
+  /* Title */
   .glass-title {
     margin: 0 0 28px 0;
     font: 700 26px/1.2 var(--font-sans);
@@ -147,13 +161,14 @@
 
   .glass-subtitle {
     display: block;
-    font: 400 12.5px/1.5 var(--font-sans);
-    color: rgba(255, 255, 255, 0.55);
+    font: 400 13px/1.5 var(--font-sans);
+    color: #cbd5e1;
     text-align: center;
     margin-top: 6px;
     letter-spacing: 0;
   }
 
+  /* Input group wrapper */
   .glass-input-group {
     position: relative;
     margin-bottom: 18px;
@@ -215,6 +230,7 @@
     color: rgba(255, 255, 255, 0.45) !important;
   }
 
+  /* Remember & Forgot row */
   .glass-meta-row {
     display: flex;
     align-items: center;
@@ -258,6 +274,7 @@
     text-decoration: none;
   }
 
+  /* Primary dark button */
   .glass-btn-primary {
     width: 100%;
     padding: 13px 20px;
@@ -284,6 +301,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
+  /* Ghost/outline button */
   .glass-btn-ghost {
     width: 100%;
     padding: 11px 20px;
@@ -302,6 +320,7 @@
     color: #ffffff;
   }
 
+  /* Badge */
   .glass-badge {
     display: inline-flex;
     align-items: center;
@@ -322,6 +341,7 @@
     color: #fbbf24;
   }
 
+  /* Divider */
   .glass-divider {
     height: 1px;
     background: rgba(255, 255, 255, 0.1);
@@ -373,6 +393,8 @@
     color: #ffffff;
   }
 
+
+  /* Error banner */
   .glass-error-banner {
     background: rgba(239, 68, 68, 0.15);
     border: 1px solid rgba(239, 68, 68, 0.3);
@@ -386,6 +408,7 @@
     margin-bottom: 4px;
   }
 
+  /* Signup notice box */
   .glass-notice-box {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -396,6 +419,7 @@
     margin-bottom: 6px;
   }
 
+  /* Signup form grid */
   .glass-form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -406,6 +430,7 @@
     grid-column: 1 / -1;
   }
 
+  /* Logo in glass card */
   .glass-logo {
     display: flex;
     align-items: center;
@@ -492,6 +517,18 @@
       font-size: 14px !important;
     }
   }
+
+  @keyframes slideInRight {
+    from { transform: translateX(110%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes pulseDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.15); }
+  }
+  .notif-item-row:hover {
+    background: var(--slate-050) !important;
+  }
 </style>
 </helmet>
 
@@ -512,6 +549,68 @@
         <button onClick="{{ goStudent }}" style="{{ tabStudentStyle }}">Student</button>
         <button onClick="{{ goAdmin }}" style="{{ tabAdminStyle }}">Admin</button>
       </div>
+      <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+        <div style="position:relative;">
+          <button id="tif-notif-btn" onClick="{{ toggleNotif }}" title="การแจ้งเตือนกิจกรรม" style="{{ notifBtnStyle }}">
+            <span style="font-size:14px;">🔔</span>
+            <sc-if value="{{ hasUnreadNotif }}" hint-placeholder-val="{{ false }}">
+              <span style="{{ notifBadgeStyle }}">{{ unreadNotifCount }}</span>
+            </sc-if>
+          </button>
+          <sc-if value="{{ showNotifDropdown }}" hint-placeholder-val="{{ false }}">
+            <div id="tif-notif-dropdown" style="{{ notifDropdownStyle }}">
+              <div style="padding:12px 14px; border-bottom:1px solid var(--border-default); display:flex; align-items:center; justify-content:space-between; background:var(--surface-card);">
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span style="font:600 13px/1 var(--font-sans); color:var(--text-heading);">การแจ้งเตือนกิจกรรม</span>
+                  <sc-if value="{{ hasUnreadNotif }}" hint-placeholder-val="{{ false }}">
+                    <span style="font:500 11px/1 var(--font-mono); background:var(--status-danger-bg); color:var(--status-danger-fg); padding:2px 6px; border-radius:10px;">{{ unreadNotifCount }} ใหม่</span>
+                  </sc-if>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <button onClick="{{ markAllNotifRead }}" style="font:500 11px/1 var(--font-sans); color:var(--navy-600); background:transparent; border:none; cursor:pointer; padding:2px 4px;">✓ อ่านทั้งหมด</button>
+                  <button onClick="{{ toggleNotif }}" style="font:600 12px/1 var(--font-sans); color:var(--text-muted); background:transparent; border:none; cursor:pointer; padding:2px 4px;">✕</button>
+                </div>
+              </div>
+              <div style="max-height:360px; overflow-y:auto; display:flex; flex-direction:column;">
+                <sc-if value="{{ notifEmpty }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:28px 16px; text-align:center; color:var(--text-muted); font:400 12.5px/1.5 var(--font-sans);">
+                    ยังไม่มีรายการแจ้งเตือนใหม่
+                  </div>
+                </sc-if>
+                <sc-for list="{{ notifList }}" as="n" hint-placeholder-count="3">
+                  <div class="notif-item-row" style="{{ n.itemStyle }}">
+                    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:8px;">
+                      <div style="display:flex; align-items:center; gap:6px;">
+                        <span style="font-size:14px;">{{ n.icon }}</span>
+                        <span style="font:600 12.5px/1.3 var(--font-sans); color:var(--text-heading);">{{ n.title }}</span>
+                        <sc-if value="{{ n.isUnread }}" hint-placeholder-val="{{ false }}">
+                          <span style="width:6px; height:6px; border-radius:50%; background:var(--status-danger-bg); display:inline-block; flex-shrink:0;"></span>
+                        </sc-if>
+                      </div>
+                      <span style="font:400 11px/1 var(--font-mono); color:var(--text-faint); white-space:nowrap;">{{ n.timeAgo }}</span>
+                    </div>
+                    <div style="font:600 12px/1.4 var(--font-sans); color:var(--text-heading); margin-top:2px;">
+                      {{ n.actor }}
+                    </div>
+                    <div style="font:400 11.5px/1.4 var(--font-sans); color:var(--text-muted); margin-top:2px;">
+                      {{ n.desc }}
+                    </div>
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-top:6px; padding-top:4px;">
+                      <span style="font:400 11px/1 var(--font-mono); color:var(--text-faint);">{{ n.bookingCode }}</span>
+                      <sc-if value="{{ n.hasAction }}" hint-placeholder-val="{{ false }}">
+                        <button onClick="{{ n.onViewDay }}" style="font:500 11px/1 var(--font-sans); padding:4px 8px; border-radius:4px; border:1px solid var(--border-default); background:var(--surface-page); color:var(--navy-700); cursor:pointer;">ดูในปฏิทิน ➔</button>
+                      </sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="padding:9px 14px; background:var(--slate-050); border-top:1px solid var(--border-default); display:flex; justify-content:center;">
+                <button onClick="{{ goAuditFromNotif }}" style="font:500 11.5px/1 var(--font-sans); color:var(--navy-700); background:transparent; border:none; cursor:pointer;">ดูประวัติทั้งหมดใน Audit Log ›</button>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
       <sc-if value="{{ signedIn }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ openSettings }}" style="font:500 12px/1 var(--font-sans); padding:6px 10px; border-radius:5px; border:1px solid rgba(255,255,255,.28); background:rgba(255,255,255,.1); color:#fff; cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; gap:4px;">⚙️ Settings</button>
         <button onClick="{{ signOut }}" style="font:500 12px/1 var(--font-sans); padding:6px 10px; border-radius:5px; border:1px solid rgba(255,255,255,.28); background:transparent; color:#fff; cursor:pointer; white-space:nowrap;">Sign out</button>
@@ -529,17 +628,20 @@
       <div class="glass-auth-bg"></div>
       <div class="auth-page-wrapper">
         <div class="glass-card">
+          <!-- Logo -->
           <div class="glass-logo">
             <span class="glass-logo-img">
               <img src="uploads/images.jpg" alt="Thai Inter Flying">
             </span>
           </div>
 
+          <!-- Title -->
           <h1 class="glass-title">
             Login
             <span class="glass-subtitle">Student Flight Slot Booking System</span>
           </h1>
 
+          <!-- Form -->
           <div class="glass-input-group">
             <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Email" placeholder="name@example.com" type="email" value="{{ authEmail }}" on-change="{{ setAuthEmail }}" hint-size="100%,66px"></x-import>
           </div>
@@ -554,8 +656,10 @@
             </div>
           </sc-if>
 
+          <!-- Login Button -->
           <button onClick="{{ doLogin }}" class="glass-btn-primary">Login</button>
 
+          <!-- Footer -->
           <div class="glass-footer-text">
             <span>Don't have an account?</span>
             <button onClick="{{ goSignup }}">Register</button>
@@ -572,21 +676,25 @@
       <div class="glass-auth-bg"></div>
       <div class="auth-page-wrapper">
         <div class="glass-card glass-card-wide">
+          <!-- Logo -->
           <div class="glass-logo">
             <span class="glass-logo-img">
               <img src="uploads/images.jpg" alt="Thai Inter Flying">
             </span>
           </div>
 
+          <!-- Title -->
           <h1 class="glass-title">
             Create Account
             <span class="glass-subtitle">Register your student pilot profile</span>
           </h1>
 
+          <!-- Notice -->
           <div class="glass-notice-box">
             {{ signupNotice }}
           </div>
 
+          <!-- Form Grid -->
           <div class="glass-form-grid">
             <div class="glass-input-group">
               <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="First name" placeholder="First name" value="{{ first }}" on-change="{{ setFirst }}" hint-size="100%,66px"></x-import>
@@ -617,6 +725,7 @@
             </div>
           </sc-if>
 
+          <!-- Buttons -->
           <div style="display:flex; flex-direction:column; gap:10px; margin-top:6px;">
             <button onClick="{{ doSignup }}" class="glass-btn-primary">Create account</button>
             <button onClick="{{ goLogin }}" class="glass-btn-ghost">Back to sign in</button>
@@ -629,21 +738,25 @@
       <div class="glass-auth-bg"></div>
       <div class="auth-page-wrapper">
         <div class="glass-card">
+          <!-- Logo -->
           <div class="glass-logo">
             <span class="glass-logo-img">
               <img src="uploads/images.jpg" alt="Thai Inter Flying">
             </span>
           </div>
 
+          <!-- Title -->
           <h1 class="glass-title">
             Staff Login
             <span class="glass-subtitle">Training Office Access</span>
           </h1>
 
+          <!-- Badge -->
           <div style="display:flex; justify-content:center; margin-bottom:20px;">
             <span class="glass-badge glass-badge-amber">Staff &amp; Operations</span>
           </div>
 
+          <!-- Form -->
           <div class="glass-input-group">
             <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Staff Email" placeholder="staff@example.com" type="email" value="{{ adminEmail }}" on-change="{{ setAdminEmail }}" hint-size="100%,66px"></x-import>
           </div>
@@ -657,6 +770,7 @@
             </div>
           </sc-if>
 
+          <!-- Buttons -->
           <div style="display:flex; flex-direction:column; gap:10px; margin-top:6px;">
             <button onClick="{{ doAdminLogin }}" class="glass-btn-primary">Authenticate</button>
             <button onClick="{{ goStudent }}" class="glass-btn-ghost">Back to student booking</button>
@@ -925,7 +1039,12 @@
             <sc-for list="{{ days }}" as="d" hint-placeholder-count="35">
               <div onClick="{{ d.onClick }}" style="{{ d.adminStyle }}">
                 <div style="display:flex; flex-direction:column; width:100%; gap:2px;">
-                  <span style="font:500 13px/1 var(--font-mono); color:var(--text-heading);">{{ d.num }}</span>
+                  <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+                    <span style="font:500 13px/1 var(--font-mono); color:var(--text-heading);">{{ d.num }}</span>
+                    <sc-if value="{{ d.hasRecent }}" hint-placeholder-val="{{ false }}">
+                      <span title="มีการจองใหม่ใน 24 ชม." style="font:600 8.5px/1 var(--font-sans); background:var(--status-success-bg); color:var(--status-success-fg); padding:1px 4px; border-radius:3px; letter-spacing:0.02em;">NEW</span>
+                    </sc-if>
+                  </div>
                   <span style="{{ d.loadStyle }}">{{ d.load }}</span>
                 </div>
                 <div style="display:flex; flex-direction:column; gap:2px; width:100%; margin-top:4px;">
@@ -941,6 +1060,7 @@
             <span style="display:inline-flex; align-items:center; gap:6px; font:400 12px/1 var(--font-sans); color:var(--text-muted);"><span style="width:10px; height:10px; border-radius:3px; background:var(--navy-050); border:1px solid var(--navy-200);"></span>Booked student</span>
             <span style="display:inline-flex; align-items:center; gap:6px; font:400 12px/1 var(--font-sans); color:var(--text-muted);"><span style="width:10px; height:10px; border-radius:3px; background:var(--status-danger-bg);"></span>Slots full</span>
             <span style="display:inline-flex; align-items:center; gap:6px; font:400 12px/1 var(--font-sans); color:var(--text-muted);"><span style="width:10px; height:10px; border-radius:3px; background:var(--slate-100); border:1px solid var(--slate-200);"></span>No flying (maintenance)</span>
+            <span style="display:inline-flex; align-items:center; gap:6px; font:400 12px/1 var(--font-sans); color:var(--text-muted);"><span style="font:600 8.5px/1 var(--font-sans); padding:2px 4px; border-radius:3px; background:var(--status-success-bg); color:var(--status-success-fg);">NEW</span>จองใหม่ใน 24 ชม.</span>
           </div>
         </div>
 
@@ -965,7 +1085,12 @@
               <div style="display:flex; gap:14px; align-items:center; padding:11px 20px; border-bottom:1px solid var(--slate-100);">
                 <span style="font:500 12px/1.3 var(--font-mono); color:var(--text-body); width:100px; flex-shrink:0;">{{ b.id }}</span>
                 <span style="display:flex; flex-direction:column; gap:2px; flex:1; min-width:104px; overflow:hidden;">
-                  <span style="font:400 13px/1.3 var(--font-sans); color:var(--text-heading);">{{ b.name }}</span>
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <span style="font:400 13px/1.3 var(--font-sans); color:var(--text-heading);">{{ b.name }}</span>
+                    <sc-if value="{{ b.isNew }}" hint-placeholder-val="{{ false }}">
+                      <span style="font:600 8.5px/1 var(--font-sans); padding:1px 4px; border-radius:3px; background:var(--status-success-bg); color:var(--status-success-fg);">NEW</span>
+                    </sc-if>
+                  </div>
                   <span style="font:400 11.5px/1.3 var(--font-sans); color:var(--text-faint); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ b.email }}</span>
                 </span>
                 <span style="font:500 12px/1.3 var(--font-mono); color:var(--text-muted); width:58px; flex-shrink:0;">{{ b.batch }}</span>
@@ -983,18 +1108,6 @@
             </sc-if>
           </div>
 
-          <div style="display:flex; flex-direction:column; gap:20px;">
-          <div style="background:var(--surface-card); border:1px solid var(--border-default); border-radius:10px; box-shadow:var(--shadow-card); padding:20px; display:flex; flex-direction:column; gap:14px;">
-            <div style="display:flex; flex-direction:column; gap:5px;">
-              <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.06em; text-transform:uppercase; color:var(--text-faint);">Booking window</span>
-              <span style="font:400 12.5px/1.5 var(--font-sans); color:var(--text-muted);">{{ windowNote }}</span>
-            </div>
-            <div style="border-top:1px solid var(--border-default); padding-top:14px; display:flex; flex-direction:column; gap:12px;">
-              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Registration opens" type="date" value="{{ signupOpenValue }}" on-change="{{ setSignupOpen }}" hint-size="100%,64px"></x-import>
-              <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Input" label="Day booking opens" type="date" value="{{ bookingOpenValue }}" on-change="{{ setBookingOpen }}" hint-size="100%,64px"></x-import>
-            </div>
-          </div>
-
           <div style="background:var(--surface-card); border:1px solid var(--border-default); border-radius:10px; box-shadow:var(--shadow-card); padding:20px; display:flex; flex-direction:column; gap:14px;">
             <div style="display:flex; flex-direction:column; gap:5px;">
               <span style="font:500 11.5px/1 var(--font-sans); letter-spacing:.06em; text-transform:uppercase; color:var(--text-faint);">Day detail</span>
@@ -1003,8 +1116,13 @@
             </div>
             <div style="border-top:1px solid var(--border-default); padding-top:12px; display:flex; flex-direction:column; gap:8px;">
               <sc-for list="{{ dayDetailRows }}" as="r" hint-placeholder-count="3">
-                <div style="display:flex; flex-direction:column; gap:2px;">
-                  <span style="font:400 13px/1.4 var(--font-sans); color:var(--text-heading);">{{ r.name }}</span>
+                <div style="display:flex; flex-direction:column; gap:2px; padding:6px 8px; border-radius:6px; background:var(--slate-050);">
+                  <div style="display:flex; align-items:center; justify-content:space-between;">
+                    <span style="font:600 13px/1.4 var(--font-sans); color:var(--text-heading);">{{ r.name }}</span>
+                    <sc-if value="{{ r.isNew }}" hint-placeholder-val="{{ false }}">
+                      <span style="font:600 8.5px/1 var(--font-sans); padding:1px 5px; border-radius:3px; background:var(--status-success-bg); color:var(--status-success-fg);">NEW</span>
+                    </sc-if>
+                  </div>
                   <span style="font:400 11.5px/1.4 var(--font-mono); color:var(--text-muted);">{{ r.batch }}</span>
                   <span style="font:400 11.5px/1.4 var(--font-sans); color:var(--text-faint);">{{ r.contact }}</span>
                 </div>
@@ -1016,7 +1134,6 @@
               <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" variant="secondary" size="sm" on-click="{{ markFull }}" disabled="{{ noDaySelected }}" style="width:100%" hint-size="100%,32px">Mark slots full</x-import>
               <x-import component-from-global-scope="AviCoreDesignSystem_de3db9.Button" variant="ghost" size="sm" on-click="{{ clearFlag }}" disabled="{{ noDaySelected }}" style="width:100%" hint-size="100%,32px">Clear day status</x-import>
             </div>
-          </div>
           </div>
         </div>
     </sc-if>
@@ -1050,7 +1167,12 @@
               <div style="display:flex; gap:12px; align-items:center; padding:11px 20px; border-bottom:1px solid var(--slate-100);">
                 <span style="font:500 12px/1.3 var(--font-mono); color:var(--text-body); width:110px; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ r.id }}</span>
                 <span style="display:flex; flex-direction:column; gap:2px; flex:1; min-width:160px; overflow:hidden;">
-                  <span style="font:400 13px/1.3 var(--font-sans); color:var(--text-heading);">{{ r.name }}</span>
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <span style="font:400 13px/1.3 var(--font-sans); color:var(--text-heading);">{{ r.name }}</span>
+                    <sc-if value="{{ r.isNew }}" hint-placeholder-val="{{ false }}">
+                      <span style="font:600 8.5px/1 var(--font-sans); padding:1px 4px; border-radius:3px; background:var(--status-success-bg); color:var(--status-success-fg);">NEW</span>
+                    </sc-if>
+                  </div>
                   <span style="font:400 11.5px/1.3 var(--font-sans); color:var(--text-faint); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ r.email }}</span>
                 </span>
                 <span style="font:500 12px/1.3 var(--font-mono); color:var(--text-muted); width:56px; flex-shrink:0;">{{ r.batch }}</span>
@@ -1200,6 +1322,27 @@
         </div>
       </div>
     </div>
+  <sc-if value="{{ hasToasts }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; bottom:24px; right:24px; z-index:9999; display:flex; flex-direction:column; gap:10px; max-width:380px; width:calc(100vw - 40px); pointer-events:none;">
+      <sc-for list="{{ toastList }}" as="t" hint-placeholder-count="1">
+        <div style="pointer-events:auto; background:var(--surface-card); border:1px solid var(--border-default); border-left:4px solid var(--status-success-bg); border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.18); padding:14px 16px; display:flex; flex-direction:column; gap:6px; animation:slideInRight 0.3s ease-out;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="font-size:16px;">{{ t.icon }}</span>
+              <span style="font:600 13px/1.3 var(--font-sans); color:var(--text-heading);">{{ t.title }}</span>
+            </div>
+            <button onClick="{{ t.onDismiss }}" style="border:none; background:transparent; cursor:pointer; color:var(--text-muted); font-size:14px; padding:0 2px;">✕</button>
+          </div>
+          <div style="font:600 12.5px/1.4 var(--font-sans); color:var(--text-heading);">{{ t.actor }}</div>
+          <div style="font:400 12px/1.4 var(--font-sans); color:var(--text-body);">{{ t.desc }}</div>
+          <sc-if value="{{ t.hasDay }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; justify-content:flex-end; margin-top:2px;">
+              <button onClick="{{ t.onViewDay }}" style="font:500 11.5px/1 var(--font-sans); padding:4px 10px; border-radius:4px; border:1px solid var(--border-strong); background:var(--surface-page); color:var(--navy-700); cursor:pointer;">ดูในปฏิทิน ➔</button>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
   </sc-if>
 </div>
 
@@ -1277,9 +1420,131 @@ function formatAuditDetail(action, d) {
   return '';
 }
 
+function playNotifChime() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12);
+    gain.gain.setValueAtTime(0.18, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.5);
+  } catch (e) { }
+}
+
+function timeAgo(ms) {
+  if (!ms) return '';
+  const diffSec = Math.floor((Date.now() - Number(ms)) / 1000);
+  if (diffSec < 60) return 'เมื่อสักครู่';
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return diffMin + ' นาทีที่แล้ว';
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return diffHr + ' ชม.ที่แล้ว';
+  const diffDay = Math.floor(diffHr / 24);
+  return diffDay + ' วันที่แล้ว';
+}
+
+function findMonthIndex(dayIso) {
+  if (!dayIso) return -1;
+  const d = parseIso(dayIso);
+  const y = d.getFullYear(), m = d.getMonth();
+  for (let i = 0; i < MONTHS.length; i++) {
+    if (MONTHS[i][0] === y && MONTHS[i][1] === m) return i;
+  }
+  return -1;
+}
+
+function parseAuditItem(a) {
+  let detail = null;
+  try { detail = typeof a.detail === 'string' ? JSON.parse(a.detail) : a.detail; } catch (e) { detail = null; }
+  let title = 'กิจกรรมใหม่';
+  let icon = '🔔';
+  let desc = '';
+  let actor = a.email || '';
+  let targetDay = null;
+  let bookingCode = a.booking_id || '';
+
+  if (a.action === 'booking.create') {
+    icon = '✈️';
+    title = 'จองวันบินใหม่';
+    const name = (detail && detail.name) || '';
+    const batch = (detail && detail.batch) ? ' (Batch ' + detail.batch + ')' : '';
+    actor = name ? name + batch : a.email;
+    if (detail && Array.isArray(detail.days) && detail.days.length) {
+      desc = 'จอง ' + detail.days.length + ' วัน: ' + compactRange(detail.days[0], detail.days[detail.days.length - 1]);
+      targetDay = detail.days[0];
+    } else {
+      desc = 'ทำการจองวันบินใหม่';
+    }
+  } else if (a.action === 'booking.replaced') {
+    icon = '🔄';
+    title = 'แก้ไขวันบิน';
+    const name = (detail && detail.name) || '';
+    const batch = (detail && detail.batch) ? ' (Batch ' + detail.batch + ')' : '';
+    actor = name ? name + batch : a.email;
+    if (detail && Array.isArray(detail.days) && detail.days.length) {
+      desc = 'เปลี่ยนเป็น ' + detail.days.length + ' วัน: ' + compactRange(detail.days[0], detail.days[detail.days.length - 1]);
+      targetDay = detail.days[0];
+    } else {
+      desc = 'เปลี่ยนแปลงวันบิน';
+    }
+  } else if (a.action === 'booking.delete') {
+    icon = '❌';
+    title = 'ยกเลิกการจอง';
+    const name = (detail && detail.name) || '';
+    const batch = (detail && detail.batch) ? ' (Batch ' + detail.batch + ')' : '';
+    actor = name ? name + batch : a.email;
+    desc = (detail && Array.isArray(detail.days) && detail.days.length)
+      ? 'ยกเลิก ' + detail.days.length + ' วัน: ' + compactRange(detail.days[0], detail.days[detail.days.length - 1])
+      : 'ยกเลิกการจองวันบิน';
+    if (detail && detail.byAdmin) desc += ' (โดยเจ้าหน้าที่)';
+  } else if (a.action === 'booking.delete_all') {
+    icon = '❌';
+    title = 'ยกเลิกการจองทั้งหมด';
+    actor = (detail && detail.name) ? detail.name + (detail.batch ? ' (' + detail.batch + ')' : '') : a.email;
+    desc = 'ยกเลิกรายการจองทั้งหมด';
+  } else if (a.action === 'student.register') {
+    icon = '👤';
+    title = 'นักเรียนลงทะเบียนใหม่';
+    const name = [detail && detail.first, detail && detail.last].filter(Boolean).join(' ');
+    actor = name ? name + (detail.batch ? ' (Batch ' + detail.batch + ')' : '') : a.email;
+    desc = (detail && detail.phone) ? 'เบอร์ติดต่อ: ' + detail.phone : 'ลงทะเบียนบัญชีนักเรียนใหม่';
+  } else if (a.action === 'slot.day_status') {
+    icon = '⚙️';
+    title = 'เปลี่ยนสถานะวันบิน';
+    actor = a.email;
+    targetDay = detail && detail.day;
+    desc = (detail && detail.day ? fmtIso(detail.day) : 'วัน') + ' → ' + (detail && detail.status ? detail.status : 'เปิดปกติ (cleared)');
+  } else if (a.action === 'settings.update') {
+    icon = '⚙️';
+    title = 'อัปเดตการตั้งค่าระบบ';
+    actor = a.email;
+    desc = (detail && detail.key ? detail.key : '') + (detail && detail.value ? ' = ' + detail.value : '');
+  }
+
+  return {
+    id: a.id,
+    ms: a.ms,
+    icon: icon,
+    title: title,
+    actor: actor,
+    desc: desc,
+    bookingCode: bookingCode,
+    targetDay: targetDay,
+    timeAgo: timeAgo(a.ms)
+  };
+}
+
 class Component extends DCLogic {
   state = {
-    role: 'student', view: 'login', accounts: {}, session: null, token: null, adminEmail: '', token: null, adminEmail: '',
+    role: 'student', view: 'login', accounts: {}, session: null, token: null, adminEmail: '',
     authEmail: '', authPw: '', authErr: '', suPw: '', suPw2: '',
     adminAuthed: false, adminPw: '', cancelOpen: false, settingsOpen: false, adminCancelOpen: false, adminCancelTarget: null,
     settingsFirst: undefined, settingsLast: undefined, settingsBatch: undefined, settingsPhone: undefined,
@@ -1288,7 +1553,13 @@ class Component extends DCLogic {
     step: 1, first: '', last: '', batch: '', email: '', phone: '', confirmedDays: null,
     mi: 0, sel: [], error: '',
     adminMode: 'roster', adminDay: null, settings: {}, audit: [], listQ: '', listBatch: '', listFrom: '', listTo: '',
-    bookings: SEED, dayState: SEED_DAY_STATE, code: null
+    bookings: SEED, dayState: SEED_DAY_STATE, code: null,
+    notifOpen: false,
+    lastReadAuditId: (function () {
+      try { return Number(localStorage.getItem('tif_last_read_audit_id') || 0); } catch (e) { return 0; }
+    })(),
+    recentAudit: [],
+    toasts: []
   };
 
   componentDidMount() {
@@ -1302,15 +1573,56 @@ class Component extends DCLogic {
     }).catch(function (e) {
       self.setState({ dbStatus: 'error', dbError: String(e.message || e) });
     });
-    this.poll = setInterval(function () { if (self.db) self.refresh(true); }, 20000);
+    this.poll = setInterval(function () { if (self.db) self.refresh(true); }, 15000);
     this.onResize = function () { self.setState({ vw: window.innerWidth }); };
     window.addEventListener('resize', this.onResize);
     this.onResize();
+
+    this.onDocClick = function (e) {
+      if (self.state.notifOpen) {
+        const btn = document.getElementById('tif-notif-btn');
+        const pop = document.getElementById('tif-notif-dropdown');
+        if (btn && btn.contains(e.target)) return;
+        if (pop && pop.contains(e.target)) return;
+        self.setState({ notifOpen: false });
+      }
+    };
+    document.addEventListener('click', this.onDocClick);
   }
 
   componentWillUnmount() {
     if (this.poll) clearInterval(this.poll);
     if (this.onResize) window.removeEventListener('resize', this.onResize);
+    if (this.onDocClick) document.removeEventListener('click', this.onDocClick);
+  }
+
+  dismissToast(toastId) {
+    this.setState(function (prevState) {
+      return { toasts: (prevState.toasts || []).filter(function (t) { return t.id !== toastId; }) };
+    });
+  }
+
+  markAllNotifRead() {
+    const list = this.state.recentAudit || [];
+    let maxId = this.state.lastReadAuditId || 0;
+    list.forEach(function (a) {
+      if (Number(a.id) > maxId) maxId = Number(a.id);
+    });
+    try { localStorage.setItem('tif_last_read_audit_id', String(maxId)); } catch (e) { }
+    this.setState({ lastReadAuditId: maxId });
+  }
+
+  jumpToDay(targetDay) {
+    if (!targetDay) return;
+    const mi = findMonthIndex(targetDay);
+    this.setState({
+      role: 'admin',
+      adminAuthed: true,
+      adminMode: 'roster',
+      adminDay: targetDay,
+      mi: mi >= 0 ? mi : this.state.mi,
+      notifOpen: false
+    });
   }
 
   refresh(quiet) {
@@ -1318,7 +1630,45 @@ class Component extends DCLogic {
     if (!this.state.session && !this.state.adminAuthed) return Promise.resolve();
     if (!quiet) this.setState({ dbStatus: 'loading' });
     return this.db.loadAll().then(function (d) {
-      self.setState({ accounts: d.accounts || {}, bookings: d.bookings || [], dayState: d.dayState || {}, settings: d.settings || {}, dbStatus: 'ok', dbError: '' });
+      const incomingAudit = d.recentAudit || [];
+      let newToasts = [];
+      if (self.state.adminAuthed && incomingAudit.length && self.prevAuditMaxId !== undefined && self.prevAuditMaxId > 0) {
+        const brandNew = incomingAudit.filter(function (a) { return Number(a.id) > self.prevAuditMaxId; });
+        if (brandNew.length) {
+          playNotifChime();
+          newToasts = brandNew.slice(0, 3).map(function (a) {
+            const parsed = parseAuditItem(a);
+            const toastId = 'toast-' + a.id + '-' + Date.now();
+            setTimeout(function () { self.dismissToast(toastId); }, 7000);
+            return {
+              id: toastId,
+              icon: parsed.icon,
+              title: parsed.title,
+              actor: parsed.actor,
+              desc: parsed.desc,
+              targetDay: parsed.targetDay
+            };
+          });
+        }
+      }
+      if (incomingAudit.length) {
+        const curMax = Math.max.apply(null, incomingAudit.map(function (a) { return Number(a.id) || 0; }));
+        self.prevAuditMaxId = Math.max(self.prevAuditMaxId || 0, curMax);
+      } else if (self.prevAuditMaxId === undefined) {
+        self.prevAuditMaxId = 0;
+      }
+
+      const nextToasts = newToasts.length ? (self.state.toasts || []).concat(newToasts) : self.state.toasts;
+      self.setState({
+        accounts: d.accounts || {},
+        bookings: d.bookings || [],
+        dayState: d.dayState || {},
+        settings: d.settings || {},
+        recentAudit: incomingAudit.length ? incomingAudit : self.state.recentAudit,
+        toasts: nextToasts,
+        dbStatus: 'ok',
+        dbError: ''
+      });
       if (self.state.adminMode === 'audit' && self.db) return self.db.fetchAudit({ limit: 300 }).then(function (ad) { self.setState({ audit: ad.audit || [] }); });
     }).catch(function (e) {
       self.setState({ dbStatus: 'error', dbError: String(e.message || e) });
@@ -1409,16 +1759,8 @@ class Component extends DCLogic {
 
   get slots() { return this.props.slotsPerDay || 5; }
 
-  get signupOpen() { return this.state.settings.signup_open || this.props.signupOpenDate || '2026-08-03'; }
-  get bookingOpen() { return this.state.settings.booking_open || this.props.bookingOpenDate || '2026-08-05'; }
-
-  setSetting(key, value) {
-    const next = Object.assign({}, this.state.settings);
-    if (value) next[key] = value; else delete next[key];
-    this.setState({ settings: next });
-    const self = this;
-    if (this.db) this.db.saveSetting(key, value || null).catch(function (e) { self.dbFail(e); });
-  }
+  get signupOpen() { return (this.state && this.state.settings && this.state.settings.signup_open) || this.props.signupOpenDate || '2026-08-03'; }
+  get bookingOpen() { return (this.state && this.state.settings && this.state.settings.booking_open) || this.props.bookingOpenDate || '2026-08-05'; }
   get narrow() { return (this.state.vw || 1200) < 640; }
   get stacked() { return (this.state.vw || 1200) < 900; }
   get signupWait() { return Math.max(0, daysUntil(this.signupOpen)); }
@@ -1627,6 +1969,11 @@ class Component extends DCLogic {
     const studentApp = !adminRole && !!s.session;
     const mineDays = s.session ? this.myDays() : [];
 
+    const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+    const isRecent = function (createdMs) {
+      return !!(createdMs && (Date.now() - Number(createdMs)) < ONE_DAY_MS);
+    };
+
     const roster = s.adminMode === 'roster';
     const m = MONTHS[s.mi];
     const y = m[0], mo = m[1];
@@ -1666,6 +2013,7 @@ class Component extends DCLogic {
         out.push({
           id: id, name: nm || '—', email: em || '—', batch: ba || '—',
           count: dd.length, range: rangeLbl, created: b.created || '—',
+          isNew: isRecent(b.createdMs),
           onCancel: function () { self.adminCancelBooking(b); }
         });
       }
@@ -1707,6 +2055,7 @@ class Component extends DCLogic {
       else label = info.left + ' slots left';
 
       const roll = (map[is] || []);
+      const hasRecent = isAdmin && roll.some(function (b) { return isRecent(b.createdMs); });
       const people = roll.slice(0, 3).map(function (b) {
         return {
           label: b.name.split(' ')[0] + ' · ' + b.batch,
@@ -1727,6 +2076,7 @@ class Component extends DCLogic {
         load: info.kind === 'past' ? '' : info.kind === 'open' ? info.left + ' left' : '0 left',
         flag: info.kind === 'noFly' ? 'No flying' : info.kind === 'full' ? 'Full' : '',
         people: people,
+        hasRecent: hasRecent,
         style: this.cellStyle(info.kind, mineDay ? 'mid' : sel),
         adminStyle: this.adminCellStyle(info.kind, is === s.adminDay),
         statusStyle: this.statusStyle(sel === 'edge' ? 'edge' : info.kind),
@@ -1931,11 +2281,6 @@ class Component extends DCLogic {
       goAdmin: function () { self.setState({ role: 'admin', authErr: '' }); },
       rosterTabStyle: this.segStyle(roster),
       editTabStyle: this.segStyle(!roster),
-      signupOpenValue: this.signupOpen,
-      bookingOpenValue: this.bookingOpen,
-      setSignupOpen: function (e) { self.setSetting('signup_open', e.target.value); },
-      setBookingOpen: function (e) { self.setSetting('booking_open', e.target.value); },
-      windowNote: 'Registration opens ' + fmtIso(this.signupOpen) + '. Day booking opens ' + fmtIso(this.bookingOpen) + '. Changes apply to every student immediately.',
       goRoster: function () { self.setState({ adminMode: 'roster' }); },
       goEdit: function () { self.setState({ adminMode: 'edit' }); },
       adminHint: roster
@@ -2046,7 +2391,8 @@ class Component extends DCLogic {
         return {
           name: b.name,
           batch: b.batch + ' · ' + b.id,
-          contact: [b.email, b.phone].filter(Boolean).join(' · ')
+          contact: [b.email, b.phone].filter(Boolean).join(' · '),
+          isNew: isRecent(b.createdMs)
         };
       }),
       dayDetailEmpty: ddRoll.length ? '' : 'No bookings on this day.',
@@ -2066,6 +2412,7 @@ class Component extends DCLogic {
         return {
           id: b.id, name: b.name, batch: b.batch, count: b.days.length,
           email: b.email || '—',
+          isNew: isRecent(b.createdMs),
           range: compactRange(b.days[0], b.days[b.days.length - 1])
             + (spanDays(b.days[0], b.days[b.days.length - 1]).length === b.days.length ? '' : ' (split)'),
           onCancel: function () { self.adminCancelBooking(b); },
@@ -2088,6 +2435,83 @@ class Component extends DCLogic {
       listCountLabel: listCountLabel,
       listEmpty: listRows.length === 0,
       auditEmpty: !(s.audit && s.audit.length),
+
+      notifBtnStyle: {
+        font: '500 12px/1 var(--font-sans)', padding: '6px 10px', borderRadius: 5,
+        border: '1px solid rgba(255,255,255,.28)',
+        background: s.notifOpen ? 'rgba(255,255,255,.22)' : 'rgba(255,255,255,.1)',
+        color: '#fff', cursor: 'pointer', whiteSpace: 'nowrap',
+        display: 'inline-flex', alignItems: 'center', gap: 5, position: 'relative'
+      },
+      notifBadgeStyle: {
+        font: '600 10px/1 var(--font-sans)', background: 'var(--status-danger-bg)',
+        color: 'var(--status-danger-fg)', padding: '2px 5px', borderRadius: 10,
+        minWidth: 16, textAlign: 'center'
+      },
+      notifDropdownStyle: {
+        position: 'absolute', top: 'calc(100% + 8px)', right: 0,
+        width: narrow ? 'calc(100vw - 32px)' : '360px', maxWidth: '380px',
+        background: 'var(--surface-card)', border: '1px solid var(--border-default)',
+        borderRadius: 10, boxShadow: '0 12px 36px rgba(0,0,0,0.18)', zIndex: 1000,
+        overflow: 'hidden', display: 'flex', flexDirection: 'column'
+      },
+      hasUnreadNotif: (s.recentAudit || []).filter(function (a) { return Number(a.id) > (s.lastReadAuditId || 0); }).length > 0,
+      unreadNotifCount: (function () {
+        const c = (s.recentAudit || []).filter(function (a) { return Number(a.id) > (s.lastReadAuditId || 0); }).length;
+        return c > 99 ? '99+' : String(c);
+      })(),
+      showNotifDropdown: !!s.notifOpen,
+      notifEmpty: !(s.recentAudit && s.recentAudit.length),
+      notifList: (s.recentAudit || []).slice(0, 20).map(function (a) {
+        const parsed = parseAuditItem(a);
+        const isUnread = Number(a.id) > (s.lastReadAuditId || 0);
+        return {
+          id: a.id,
+          icon: parsed.icon,
+          title: parsed.title,
+          actor: parsed.actor,
+          desc: parsed.desc,
+          bookingCode: parsed.bookingCode ? 'รหัส: ' + parsed.bookingCode : '',
+          timeAgo: parsed.timeAgo,
+          isUnread: isUnread,
+          hasAction: !!parsed.targetDay,
+          itemStyle: {
+            padding: '12px 14px', borderBottom: '1px solid var(--slate-100)',
+            background: isUnread ? 'var(--navy-050)' : 'transparent',
+            display: 'flex', flexDirection: 'column', gap: 2, transition: 'background 0.15s ease'
+          },
+          onViewDay: function () { self.jumpToDay(parsed.targetDay); }
+        };
+      }),
+      toggleNotif: function (e) {
+        if (e && e.stopPropagation) e.stopPropagation();
+        self.setState({ notifOpen: !self.state.notifOpen });
+      },
+      markAllNotifRead: function (e) {
+        if (e && e.stopPropagation) e.stopPropagation();
+        self.markAllNotifRead();
+      },
+      goAuditFromNotif: function (e) {
+        if (e && e.stopPropagation) e.stopPropagation();
+        self.setState({ notifOpen: false, adminMode: 'audit' });
+        self.loadAudit(true);
+      },
+      hasToasts: (s.toasts || []).length > 0,
+      toastList: (s.toasts || []).map(function (t) {
+        return {
+          id: t.id,
+          icon: t.icon,
+          title: t.title,
+          actor: t.actor,
+          desc: t.desc,
+          hasDay: !!t.targetDay,
+          onDismiss: function () { self.dismissToast(t.id); },
+          onViewDay: function () {
+            self.dismissToast(t.id);
+            self.jumpToDay(t.targetDay);
+          }
+        };
+      })
     };
   }
 }
