@@ -1193,11 +1193,14 @@
     </sc-if>
 
     <sc-if value="{{ auditMode }}" hint-placeholder-val="{{ false }}">
-<div style="background:var(--surface-card); border:1px solid var(--border-default); border-radius:10px; box-shadow:var(--shadow-card); overflow:hidden;">
+      <div id="audit-log-section" style="background:var(--surface-card); border:1px solid var(--border-default); border-radius:10px; box-shadow:var(--shadow-card); overflow:hidden; scroll-margin-top:24px;">
         <div style="padding:16px 20px; border-bottom:1px solid var(--border-default); display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
-          <div style="display:flex; flex-direction:column; gap:4px;">
-            <h2 style="margin:0; font:600 15px/1.4 var(--font-sans); color:var(--text-heading);">Audit log</h2>
-            <span style="font:400 12.5px/1.4 var(--font-sans); color:var(--text-muted);">Append-only record of who booked, replaced, cancelled or removed bookings, and when.</span>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:20px;">📋</span>
+            <div style="display:flex; flex-direction:column; gap:3px;">
+              <h2 style="margin:0; font:600 16px/1.4 var(--font-sans); color:var(--text-heading);">Audit log (ประวัติการบันทึกข้อมูลทั้งหมด)</h2>
+              <span style="font:400 12.5px/1.4 var(--font-sans); color:var(--text-muted);">Append-only record of who booked, replaced, cancelled or removed bookings, and when.</span>
+            </div>
           </div>
           <button onClick="{{ refreshAudit }}" style="font:500 11.5px/1 var(--font-sans); padding:7px 12px; border-radius:5px; border:1px solid var(--border-strong); background:var(--surface-card); color:var(--text-body); cursor:pointer; white-space:nowrap;">Refresh</button>
         </div>
@@ -1623,6 +1626,25 @@ class Component extends DCLogic {
       mi: mi >= 0 ? mi : this.state.mi,
       notifOpen: false
     });
+    setTimeout(function () {
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }, 80);
+  }
+
+  scrollToAudit() {
+    setTimeout(function () {
+      const el = document.getElementById('audit-log-section');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        el.style.transition = 'box-shadow 0.4s ease, border-color 0.4s ease';
+        el.style.boxShadow = '0 0 0 4px rgba(28,43,107,0.3)';
+        el.style.borderColor = 'var(--navy-700)';
+        setTimeout(function () {
+          el.style.boxShadow = '';
+          el.style.borderColor = '';
+        }, 2200);
+      }
+    }, 100);
   }
 
   refresh(quiet) {
@@ -2424,7 +2446,11 @@ class Component extends DCLogic {
       listTabStyle: this.segStyle(listMode),
       auditTabStyle: this.segStyle(auditMode),
       goList: function () { self.setState({ adminMode: 'list' }); },
-      goAudit: function () { self.setState({ adminMode: 'audit' }); self.loadAudit(true); },
+      goAudit: function () {
+        self.setState({ adminMode: 'audit' });
+        self.loadAudit(true);
+        self.scrollToAudit();
+      },
       refreshAudit: function () { self.loadAudit(true); },
       setListQ: function (e) { self.setState({ listQ: e.target.value }); },
       setListBatch: function (e) { self.setState({ listBatch: e.target.value }); },
@@ -2495,6 +2521,7 @@ class Component extends DCLogic {
         if (e && e.stopPropagation) e.stopPropagation();
         self.setState({ notifOpen: false, adminMode: 'audit' });
         self.loadAudit(true);
+        self.scrollToAudit();
       },
       hasToasts: (s.toasts || []).length > 0,
       toastList: (s.toasts || []).map(function (t) {
